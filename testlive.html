@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persianer Comprehensive Test Suite | مجموعه تست جامع تبدیل تاریخ</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, 'B Nazanin', Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        
+        .header .version {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .status-bar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .status-item {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .status-item.success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        
+        .status-item.info {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .status-item.warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .status-item strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .section-header .icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+        
+        .section-header h2 {
+            color: #764ba2;
+            font-size: 1.8em;
+            flex: 1;
+        }
+        
+        .section-header .badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .test-card .label {
+            color: #764ba2;
+            font-weight: 600;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .test-card .value {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .test-card .expected {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            font-size: 0.85em;
+            color: #2e7d32;
+        }
+        
+        .test-card .original-input {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #2196F3;
+            border-radius: 6px;
+            font-size: 0.9em;
+            background: #e3f2fd;
+            color: #0d47a1;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .test-card .original-label {
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .instruction-box {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 2px solid #667eea;
+        }
+        
+        .instruction-box h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .instruction-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .instruction-box li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .instruction-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .control-panel {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .control-panel h3 {
+            color: #d84315;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        button.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        button.warning {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .dynamic-content {
+            min-height: 80px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 2px dashed #ccc;
+        }
+        
+        .dynamic-content.loaded {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        .log-viewer {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .log-viewer .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .log-viewer .log-time {
+            color: #888;
+            margin-right: 10px;
+        }
+        
+        .log-viewer .log-success {
+            color: #00ff00;
+        }
+        
+        .log-viewer .log-error {
+            color: #ff4444;
+        }
+        
+        .log-viewer .log-info {
+            color: #4fc3f7;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .widget-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .widget {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+        }
+        
+        .widget h4 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .widget .loading {
+            color: #999;
+            text-align: center;
+            padding: 30px;
+            font-style: italic;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-bar .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .loading-indicator {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📅 Persianer Comprehensive Test Suite</h1>
+            <p class="subtitle">مجموعه تست جامع افزونه پرشینر : تجربه روان فارسی در وب</p>
+            <span class="version">Version 05.03.28</span>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item success">
+                <strong>✅ Extension Status</strong>
+                <span>Active & Ready</span>
+            </div>
+            <div class="status-item info">
+                <strong>📊 Total Tests</strong>
+                <span id="totalTests">200+</span>
+            </div>
+            <div class="status-item warning">
+                <strong>⏱️ Last Update</strong>
+                <span id="lastUpdate">2024-11-16 14:30:00</span>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="container">
+            <div class="instruction-box">
+                <h3>📋 Test Instructions | دستورالعمل تست</h3>
+                <ul>
+                    <li><strong>Persian:</strong> پس از فعال‌سازی افزونه، تمام تاریخ‌های میلادی در این صفحه باید خودکار به شمسی تبدیل شوند</li>
+                    <li><strong>English:</strong> After activating the extension, all Gregorian dates should automatically convert to Jalali</li>
+                    <li><strong>Expected Format:</strong> YYYY/MM/DD (e.g., 1403/08/26)</li>
+                    <li><strong>Dynamic Content:</strong> Use control buttons to test late-loading scenarios</li>
+                    <li><strong>Verification:</strong> Check console logs for detailed conversion information</li>
+                </ul>
+            </div>
+
+            <!-- Quick Feature Overview -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 12px; margin-top: 20px; color: white;">
+                <h3 style="color: white; margin-bottom: 20px; text-align: center; font-size: 1.5em;">⚡ Quick Feature Overview | نمای کلی ویژگی‌ها</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <strong style="display: block; margin-bottom: 5px;">🌐 ISO Format:</strong>
+                        <span style="font-size: 0.9em;">2024-11-16 → 1403/08/26</span>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <strong style="display: block; margin-bottom: 5px;">🇺🇸 US Format:</strong>
+                        <span style="font-size: 0.9em;">11/16/2024 → 1403/08/26</span>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <strong style="display: block; margin-bottom: 5px;">🇪🇺 European Format:</strong>
+                        <span style="font-size: 0.9em;">16/11/2024 → 1403/08/26</span>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <strong style="display: block; margin-bottom: 5px;">⏰ With Time:</strong>
+                        <span style="font-size: 0.9em;">2024-11-16 14:30:45 → 1403/08/26 14:30:45</span>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <strong style="display: block; margin-bottom: 5px;">📝 Textual Dates:</strong>
+                        <span style="font-size: 0.9em;">November 16, 2024 → 1403/08/26</span>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <strong style="display: block; margin-bottom: 5px;">📆 Month Names:</strong>
+                        <span style="font-size: 0.9em;">November → آبان (NO repetition)</span>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <strong style="display: block; margin-bottom: 5px;">🎭 Mixed Content:</strong>
+                        <span style="font-size: 0.9em;">Multiple dates in paragraphs → All converted</span>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <strong style="display: block; margin-bottom: 5px;">🚀 Dynamic Loading:</strong>
+                        <span style="font-size: 0.9em;">AJAX content → Auto-detected & converted</span>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <strong style="display: block; margin-bottom: 5px;">📊 Table Data:</strong>
+                        <span style="font-size: 0.9em;">All table dates → Converted in place</span>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border-left: 4px solid #fff;">
+                        <strong style="display: block; margin-bottom: 5px;">📝 Form Inputs:</strong>
+                        <span style="font-size: 0.9em;">value, placeholder, title → All attributes</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                    <p style="margin: 0; font-size: 1.1em;">👇 Scroll down to see detailed tests for each feature | برای مشاهده جزئیات هر ویژگی به پایین بروید</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: ISO Format Dates -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">🌐</span>
+                <h2>ISO Format Dates (YYYY-MM-DD)</h2>
+                <span class="badge">16 Tests</span>
+            </div>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <span class="label">Today's Date</span>
+                    <div class="value">2024-11-16</div>
+                    <div class="expected">✓ Expected: 1403/08/26</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-11-16" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">New Year 2024</span>
+                    <div class="value">2024-01-01</div>
+                    <div class="expected">✓ Expected: 1402/10/11</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-01-01" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Leap Year Date</span>
+                    <div class="value">2024-02-29</div>
+                    <div class="expected">✓ Expected: 1402/12/10</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-02-29" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Spring Equinox</span>
+                    <div class="value">2024-03-20</div>
+                    <div class="expected">✓ Expected: 1403/01/01</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-03-20" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Summer Date</span>
+                    <div class="value">2024-07-15</div>
+                    <div class="expected">✓ Expected: 1403/04/25</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-07-15" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Future Date</span>
+                    <div class="value">2025-12-31</div>
+                    <div class="expected">✓ Expected: 1404/10/10</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2025-12-31" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Past Date</span>
+                    <div class="value">2023-01-01</div>
+                    <div class="expected">✓ Expected: 1401/10/11</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2023-01-01" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Historical Date</span>
+                    <div class="value">2000-01-01</div>
+                    <div class="expected">✓ Expected: 1378/10/11</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2000-01-01" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Autumn Date</span>
+                    <div class="value">2024-09-22</div>
+                    <div class="expected">✓ Expected: 1403/07/01</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-09-22" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Winter Date</span>
+                    <div class="value">2024-12-21</div>
+                    <div class="expected">✓ Expected: 1403/10/01</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-12-21" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Mid-Year Date</span>
+                    <div class="value">2024-06-21</div>
+                    <div class="expected">✓ Expected: 1403/04/01</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-06-21" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Halloween</span>
+                    <div class="value">2024-10-31</div>
+                    <div class="expected">✓ Expected: 1403/08/10</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-10-31" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">ISO with Slash 1</span>
+                    <div class="value">2024/11/16</div>
+                    <div class="expected">✓ Expected: 1403/08/26</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024/11/16" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">ISO with Slash 2</span>
+                    <div class="value">2024/05/20</div>
+                    <div class="expected">✓ Expected: 1403/02/31</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024/05/20" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Single Digit Month</span>
+                    <div class="value">2024-1-5</div>
+                    <div class="expected">✓ Expected: 1402/10/15</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-1-5" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Single Digit Day</span>
+                    <div class="value">2024-11-5</div>
+                    <div class="expected">✓ Expected: 1403/08/15</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-11-5" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: US Format Dates -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">🇺🇸</span>
+                <h2>US Format Dates (MM/DD/YYYY)</h2>
+                <span class="badge">15 Tests</span>
+            </div>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <span class="label">Today (US Format)</span>
+                    <div class="value">11/16/2024</div>
+                    <div class="expected">✓ Expected: 1403/08/26</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="11/16/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Independence Day</span>
+                    <div class="value">07/04/2024</div>
+                    <div class="expected">✓ Expected: 1403/04/14</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="07/04/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Christmas 2024</span>
+                    <div class="value">12/25/2024</div>
+                    <div class="expected">✓ Expected: 1403/10/05</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="12/25/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Thanksgiving</span>
+                    <div class="value">11/28/2024</div>
+                    <div class="expected">✓ Expected: 1403/09/08</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="11/28/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Halloween</span>
+                    <div class="value">10/31/2024</div>
+                    <div class="expected">✓ Expected: 1403/08/10</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="10/31/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Valentine's Day</span>
+                    <div class="value">02/14/2024</div>
+                    <div class="expected">✓ Expected: 1402/11/25</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="02/14/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">New Year's Day</span>
+                    <div class="value">01/01/2024</div>
+                    <div class="expected">✓ Expected: 1402/10/11</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="01/01/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">MLK Day</span>
+                    <div class="value">01/15/2024</div>
+                    <div class="expected">✓ Expected: 1402/10/25</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="01/15/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">President's Day</span>
+                    <div class="value">02/19/2024</div>
+                    <div class="expected">✓ Expected: 1402/11/30</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="02/19/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Memorial Day</span>
+                    <div class="value">05/27/2024</div>
+                    <div class="expected">✓ Expected: 1403/03/07</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="05/27/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Labor Day</span>
+                    <div class="value">09/02/2024</div>
+                    <div class="expected">✓ Expected: 1403/06/12</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="09/02/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Veterans Day</span>
+                    <div class="value">11/11/2024</div>
+                    <div class="expected">✓ Expected: 1403/08/21</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="11/11/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Single Digit Month</span>
+                    <div class="value">1/5/2024</div>
+                    <div class="expected">✓ Expected: 1402/10/15</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="1/5/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Single Digit Day</span>
+                    <div class="value">11/5/2024</div>
+                    <div class="expected">✓ Expected: 1403/08/15</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="11/5/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Both Single Digit</span>
+                    <div class="value">1/5/2024</div>
+                    <div class="expected">✓ Expected: 1402/10/15</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="1/5/2024" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: European Format Dates -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">🇪🇺</span>
+                <h2>European Format Dates (DD/MM/YYYY & DD.MM.YYYY)</h2>
+                <span class="badge">12 Tests</span>
+            </div>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <span class="label">Today (EU Format)</span>
+                    <div class="value">16/11/2024</div>
+                    <div class="expected">✓ Expected: 1403/08/26</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="16/11/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Valentine's Day</span>
+                    <div class="value">14/02/2024</div>
+                    <div class="expected">✓ Expected: 1402/11/25</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="14/02/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">German Format</span>
+                    <div class="value">16.11.2024</div>
+                    <div class="expected">✓ Expected: 1403/08/26</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="16.11.2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Swiss Format</span>
+                    <div class="value">31.12.2024</div>
+                    <div class="expected">✓ Expected: 1403/10/11</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="31.12.2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">New Year (EU)</span>
+                    <div class="value">01/01/2024</div>
+                    <div class="expected">✓ Expected: 1402/10/11</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="01/01/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Spring Date (EU)</span>
+                    <div class="value">20/03/2024</div>
+                    <div class="expected">✓ Expected: 1403/01/01</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="20/03/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Summer Date (EU)</span>
+                    <div class="value">15/07/2024</div>
+                    <div class="expected">✓ Expected: 1403/04/25</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="15/07/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Autumn Date (EU)</span>
+                    <div class="value">22/09/2024</div>
+                    <div class="expected">✓ Expected: 1403/07/01</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="22/09/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">German DOT Format 1</span>
+                    <div class="value">01.01.2024</div>
+                    <div class="expected">✓ Expected: 1402/10/11</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="01.01.2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">German DOT Format 2</span>
+                    <div class="value">15.08.2024</div>
+                    <div class="expected">✓ Expected: 1403/05/25</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="15.08.2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">High Day Number</span>
+                    <div class="value">31/01/2024</div>
+                    <div class="expected">✓ Expected: 1402/11/11</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="31/01/2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Edge Case</span>
+                    <div class="value">29/02/2024</div>
+                    <div class="expected">✓ Expected: 1402/12/10 (Leap Year)</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="29/02/2024" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Dates with Time -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">⏰</span>
+                <h2>Dates with Time (Timestamps)</h2>
+                <span class="badge">18 Tests</span>
+            </div>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <span class="label">Current Timestamp</span>
+                    <div class="value">2024-11-16 14:30:45</div>
+                    <div class="expected">✓ Expected: 1403/08/26 14:30:45</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-11-16 14:30:45" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Morning Meeting</span>
+                    <div class="value">2024-11-20 09:00:00</div>
+                    <div class="expected">✓ Expected: 1403/08/30 09:00:00</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-11-20 09:00:00" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Midnight</span>
+                    <div class="value">2024-12-31 23:59:59</div>
+                    <div class="expected">✓ Expected: 1403/10/11 23:59:59</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-12-31 23:59:59" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Server Uptime</span>
+                    <div class="value">2024-10-15 08:30:15</div>
+                    <div class="expected">✓ Expected: 1403/07/24 08:30:15</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-10-15 08:30:15" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">US Format with Time</span>
+                    <div class="value">11/16/2024 16:45:30</div>
+                    <div class="expected">✓ Expected: 1403/08/26 16:45:30</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="11/16/2024 16:45:30" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Database Backup</span>
+                    <div class="value">2024-11-01 02:00:00</div>
+                    <div class="expected">✓ Expected: 1403/08/11 02:00:00</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="2024-11-01 02:00:00" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: Textual Dates (Month Names) -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">📝</span>
+                <h2>Textual Dates (Month Names)</h2>
+                <span class="badge">37 Tests</span>
+            </div>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <span class="label">Full Format (Long)</span>
+                    <div class="value">November 16, 2024</div>
+                    <div class="expected">✓ Expected: 1403/08/26</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="November 16, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Short Format</span>
+                    <div class="value">16 Nov 2024</div>
+                    <div class="expected">✓ Expected: 1403/08/26</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="16 Nov 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Month Day (No Year)</span>
+                    <div class="value">Nov 16</div>
+                    <div class="expected">✓ Expected: Current year</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Nov 16" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Day Month (No Year)</span>
+                    <div class="value">16 November</div>
+                    <div class="expected">✓ Expected: Current year</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="16 November" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Historical Date</span>
+                    <div class="value">September 16, 1961</div>
+                    <div class="expected">✓ Expected: 1340/06/25</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="September 16, 1961" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 1</span>
+                    <div class="value">January 1, 2024</div>
+                    <div class="expected">✓ Expected: 1402/10/11</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="January 1, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 2</span>
+                    <div class="value">February 14, 2024</div>
+                    <div class="expected">✓ Expected: 1402/11/25</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="February 14, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 3</span>
+                    <div class="value">March 20, 2024</div>
+                    <div class="expected">✓ Expected: 1403/01/01</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="March 20, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 4</span>
+                    <div class="value">April 15, 2024</div>
+                    <div class="expected">✓ Expected: 1403/01/27</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="April 15, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 5</span>
+                    <div class="value">May 5, 2024</div>
+                    <div class="expected">✓ Expected: 1403/02/16</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="May 5, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 6</span>
+                    <div class="value">June 21, 2024</div>
+                    <div class="expected">✓ Expected: 1403/04/01</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="June 21, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 7</span>
+                    <div class="value">July 4, 2024</div>
+                    <div class="expected">✓ Expected: 1403/04/14</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="July 4, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 8</span>
+                    <div class="value">August 15, 2024</div>
+                    <div class="expected">✓ Expected: 1403/05/25</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="August 15, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 9</span>
+                    <div class="value">September 22, 2024</div>
+                    <div class="expected">✓ Expected: 1403/07/01</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="September 22, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 10</span>
+                    <div class="value">October 31, 2024</div>
+                    <div class="expected">✓ Expected: 1403/08/10</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="October 31, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 11</span>
+                    <div class="value">November 16, 2024</div>
+                    <div class="expected">✓ Expected: 1403/08/26</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="November 16, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Different Months 12</span>
+                    <div class="value">December 25, 2024</div>
+                    <div class="expected">✓ Expected: 1403/10/05</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="December 25, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Short Format 1</span>
+                    <div class="value">15 Jan 2024</div>
+                    <div class="expected">✓ Expected: 1402/10/25</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="15 Jan 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Short Format 2</span>
+                    <div class="value">28 Feb 2024</div>
+                    <div class="expected">✓ Expected: 1402/12/09</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="28 Feb 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Short Format 3</span>
+                    <div class="value">1 Mar 2024</div>
+                    <div class="expected">✓ Expected: 1402/12/11</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="1 Mar 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Short Format 4</span>
+                    <div class="value">Apr 10, 2024</div>
+                    <div class="expected">✓ Expected: 1403/01/22</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Apr 10, 2024" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Mixed Format 1</span>
+                    <div class="value">8 Nov</div>
+                    <div class="expected">✓ Expected: Current year (1403/08/18)</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="8 Nov" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Mixed Format 2</span>
+                    <div class="value">Dec 31</div>
+                    <div class="expected">✓ Expected: Current year (1403/10/11)</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Dec 31" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 6: Standalone Month Names -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">📆</span>
+                <h2>Standalone Month Names (No Repetition Test)</h2>
+                <span class="badge">26 Tests</span>
+            </div>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <span class="label">January (Full)</span>
+                    <div class="value">January</div>
+                    <div class="expected">✓ Expected: January (دی) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="January" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">February (Full)</span>
+                    <div class="value">February</div>
+                    <div class="expected">✓ Expected: February (بهمن) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="February" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">March (Full)</span>
+                    <div class="value">March</div>
+                    <div class="expected">✓ Expected: March (اسفند) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="March" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">April (Full)</span>
+                    <div class="value">April</div>
+                    <div class="expected">✓ Expected: April (فروردین) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="April" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">May (Full)</span>
+                    <div class="value">May</div>
+                    <div class="expected">✓ Expected: May (اردیبهشت) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="May" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">June (Full)</span>
+                    <div class="value">June</div>
+                    <div class="expected">✓ Expected: June (خرداد) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="June" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">July (Full)</span>
+                    <div class="value">July</div>
+                    <div class="expected">✓ Expected: July (تیر) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="July" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">August (Full)</span>
+                    <div class="value">August</div>
+                    <div class="expected">✓ Expected: August (مرداد) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="August" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">September (Full)</span>
+                    <div class="value">September</div>
+                    <div class="expected">✓ Expected: September (شهریور) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="September" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">October (Full)</span>
+                    <div class="value">October</div>
+                    <div class="expected">✓ Expected: October (مهر) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="October" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">November (Full)</span>
+                    <div class="value">November</div>
+                    <div class="expected">✓ Expected: November (آبان) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="November" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">December (Full)</span>
+                    <div class="value">December</div>
+                    <div class="expected">✓ Expected: December (آذر) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="December" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Jan (Short)</span>
+                    <div class="value">Jan</div>
+                    <div class="expected">✓ Expected: Jan (دی) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Jan" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Feb (Short)</span>
+                    <div class="value">Feb</div>
+                    <div class="expected">✓ Expected: Feb (بهمن) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Feb" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Mar (Short)</span>
+                    <div class="value">Mar</div>
+                    <div class="expected">✓ Expected: Mar (اسفند) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Mar" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Apr (Short)</span>
+                    <div class="value">Apr</div>
+                    <div class="expected">✓ Expected: Apr (فروردین) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Apr" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Jun (Short)</span>
+                    <div class="value">Jun</div>
+                    <div class="expected">✓ Expected: Jun (خرداد) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Jun" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Jul (Short)</span>
+                    <div class="value">Jul</div>
+                    <div class="expected">✓ Expected: Jul (تیر) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Jul" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Aug (Short)</span>
+                    <div class="value">Aug</div>
+                    <div class="expected">✓ Expected: Aug (مرداد) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Aug" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Sep (Short)</span>
+                    <div class="value">Sep</div>
+                    <div class="expected">✓ Expected: Sep (شهریور) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Sep" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Oct (Short)</span>
+                    <div class="value">Oct</div>
+                    <div class="expected">✓ Expected: Oct (مهر) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Oct" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Nov (Short)</span>
+                    <div class="value">Nov</div>
+                    <div class="expected">✓ Expected: Nov (آبان) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Nov" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">Dec (Short)</span>
+                    <div class="value">Dec</div>
+                    <div class="expected">✓ Expected: Dec (آذر) - NO REPETITION</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="Dec" readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">In Sentence 1</span>
+                    <div class="value">The meeting is scheduled for November this year.</div>
+                    <div class="expected">✓ Expected: November (آبان)</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="The meeting is scheduled for November this year." readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">In Sentence 2</span>
+                    <div class="value">We may will launch in December and celebrate in January.</div>
+                    <div class="expected">✓ Expected: December (آذر) and January (دی)</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="We may will launch in December and celebrate in January." readonly>
+                </div>
+                <div class="test-card">
+                    <span class="label">In Sentence 3</span>
+                    <div class="value">The project starts in Sep and ends in Oct and 2 may and may 2.</div>
+                    <div class="expected">✓ Expected: Sep (شهریور) and Oct (مهر)</div>
+                    <div class="original-label">📝 Original Value (Not Converted):</div>
+                    <input type="text" class="original-input" value="The project starts in Sep and ends in Oct." readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 7: Mixed Content Test -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">🎭</span>
+                <h2>Mixed Content & Complex Scenarios</h2>
+                <span class="badge">15 Tests</span>
+            </div>
+            
+            <div class="test-card" style="margin-bottom: 20px;">
+                <span class="label">Paragraph with Multiple Dates</span>
+                <div class="value">
+                    The project started on 2024-01-15 and the first release was on March 20, 2024. 
+                    The second milestone was reached on 05/10/2024, and the final version was deployed 
+                    on November 16, 2024 at 14:30:00. The next review is scheduled for 12/31/2024.
+                </div>
+                <div class="expected">✓ All dates should convert to Jalali format</div>
+            </div>
+
+            <div class="test-card" style="margin-bottom: 20px;">
+                <span class="label">Mixed Language Paragraph</span>
+                <div class="value">
+                    پروژه در تاریخ 2024-01-15 شروع شد. The deadline is 2024-12-31. اولین نسخه در 
+                    March 20, 2024 منتشر شد و آخرین به‌روزرسانی در Nov 16 انجام شد.
+                </div>
+                <div class="expected">✓ Both English and Persian dates should convert</div>
+            </div>
+
+            <div class="test-card">
+                <span class="label">List of Events</span>
+                <div class="value">
+                    <ul style="list-style: none; padding: 0;">
+                        <li>• Project Kickoff: 2024-01-15</li>
+                        <li>• Phase 1 Complete: February 28, 2024</li>
+                        <li>• Beta Release: 05/15/2024</li>
+                        <li>• Production Launch: Nov 16</li>
+                        <li>• Year End Review: 12/31/2024</li>
+                    </ul>
+                </div>
+                <div class="expected">✓ All list dates should convert</div>
+            </div>
+        </div>
+
+        <!-- Section 8: Dynamic Content & Late Loading -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">🚀</span>
+                <h2>Dynamic Content & Late Loading (Critical Test)</h2>
+                <span class="badge">AJAX Simulation</span>
+            </div>
+
+            <div class="control-panel">
+                <h3>🎮 Control Panel</h3>
+                <div class="button-group">
+                    <button onclick="loadWidget('widget1', 2000)">📊 Load Widget 1 (2s)</button>
+                    <button onclick="loadWidget('widget2', 3000)" class="secondary">📈 Load Widget 2 (3s)</button>
+                    <button onclick="loadWidget('widget3', 4000)" class="success">📉 Load Widget 3 (4s)</button>
+                    <button onclick="loadAllWidgets()" class="warning">🚀 Load All Widgets</button>
+                    <button onclick="updateExisting()">🔄 Update Existing</button>
+                    <button onclick="addDynamicDate()">➕ Add New Date</button>
+                    <button onclick="clearLogs()">🗑️ Clear Logs</button>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress" id="progressBar" style="width: 0%;">0%</div>
+                </div>
+            </div>
+
+            <div class="widget-container">
+                <div class="widget" id="widget1">
+                    <h4>Widget 1: Resource Overview</h4>
+                    <div class="loading loading-indicator">📦 Click "Load Widget 1" to load content...</div>
+                </div>
+
+                <div class="widget" id="widget2">
+                    <h4>Widget 2: Activity Log</h4>
+                    <div class="loading loading-indicator">📦 Click "Load Widget 2" to load content...</div>
+                </div>
+
+                <div class="widget" id="widget3">
+                    <h4>Widget 3: Performance Metrics</h4>
+                    <div class="loading loading-indicator">📦 Click "Load Widget 3" to load content...</div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <h4>Existing Content (Will be Updated)</h4>
+                <div class="test-card">
+                    <span class="label">Last Updated</span>
+                    <div class="value" id="lastUpdated">2024-01-01 00:00:00</div>
+                </div>
+            </div>
+
+            <div class="widget" style="margin-top: 20px;">
+                <h4>Dynamic Date Container</h4>
+                <div class="dynamic-content" id="dynamicContainer">
+                    <p style="text-align: center; color: #999;">No dynamic dates added yet. Click "Add New Date" button.</p>
+                </div>
+            </div>
+
+            <div class="log-viewer" id="logViewer">
+                <div class="log-entry">
+                    <span class="log-time">[00:00:00]</span>
+                    <span class="log-info">🔵 System ready. Waiting for actions...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 9: Table Test -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">📊</span>
+                <h2>Table Data Test</h2>
+                <span class="badge">20 Rows</span>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Event Name</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Project Planning</td>
+                            <td>2024-01-15</td>
+                            <td>2024-01-31</td>
+                            <td>✅ Completed</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Development Phase 1</td>
+                            <td>2024-02-01</td>
+                            <td>2024-03-31</td>
+                            <td>✅ Completed</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Testing Phase</td>
+                            <td>2024-04-01</td>
+                            <td>2024-05-15</td>
+                            <td>✅ Completed</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Beta Release</td>
+                            <td>May 20, 2024</td>
+                            <td>June 30, 2024</td>
+                            <td>✅ Completed</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Production Deployment</td>
+                            <td>07/15/2024</td>
+                            <td>07/31/2024</td>
+                            <td>✅ Completed</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Monitoring & Optimization</td>
+                            <td>08/01/2024</td>
+                            <td>09/30/2024</td>
+                            <td>✅ Completed</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Feature Enhancement</td>
+                            <td>10/01/2024</td>
+                            <td>11/15/2024</td>
+                            <td>⏳ In Progress</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Year-End Review</td>
+                            <td>12/20/2024</td>
+                            <td>12/31/2024</td>
+                            <td>📅 Scheduled</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Holiday Break</td>
+                            <td>December 25, 2024</td>
+                            <td>January 5, 2025</td>
+                            <td>📅 Scheduled</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Q1 2025 Planning</td>
+                            <td>2025-01-10</td>
+                            <td>2025-01-31</td>
+                            <td>📅 Scheduled</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section 10: Form Inputs Test -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">📝</span>
+                <h2>Form Input Attributes Test</h2>
+                <span class="badge">8 Tests</span>
+            </div>
+
+            <div class="test-grid">
+                <div class="test-card">
+                    <span class="label">Input with Value</span>
+                    <input type="text" value="2024-11-16" readonly style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div class="test-card">
+                    <span class="label">Input with Placeholder</span>
+                    <input type="text" placeholder="2024-11-16" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div class="test-card">
+                    <span class="label">Input with Title Attribute</span>
+                    <input type="text" title="Created on 2024-11-16" value="Sample" readonly style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div class="test-card">
+                    <span class="label">Date Input Field</span>
+                    <input type="date" value="2024-11-16" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div class="test-card">
+                    <span class="label">Datetime-local Input</span>
+                    <input type="datetime-local" value="2024-11-16T14:30" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div class="test-card">
+                    <span class="label">Data Attribute</span>
+                    <div data-date="2024-11-16" style="padding: 10px; background: white; border-radius: 4px;">
+                        Element with data-date attribute
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Summary -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">📈</span>
+                <h2>Test Summary</h2>
+            </div>
+
+            <div class="test-grid">
+                <div class="test-card">
+                    <span class="label">Total Test Categories</span>
+                    <div class="value">10 Categories</div>
+                </div>
+                <div class="test-card">
+                    <span class="label">Total Test Cases</span>
+                    <div class="value">200+ Individual Tests</div>
+                </div>
+                <div class="test-card">
+                    <span class="label">Date Formats Tested</span>
+                    <div class="value">8 Different Formats</div>
+                </div>
+                <div class="test-card">
+                    <span class="label">Dynamic Tests</span>
+                    <div class="value">Late-loading & AJAX</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 12px; text-align: center;">
+                <h3 style="color: #764ba2; margin-bottom: 15px;">✅ Verification Checklist</h3>
+                <ul style="list-style: none; text-align: left; max-width: 600px; margin: 0 auto;">
+                    <li style="padding: 8px 0;">☑️ All ISO format dates (YYYY-MM-DD) converted to Jalali</li>
+                    <li style="padding: 8px 0;">☑️ All US format dates (MM/DD/YYYY) converted to Jalali</li>
+                    <li style="padding: 8px 0;">☑️ All European format dates (DD/MM/YYYY) converted to Jalali</li>
+                    <li style="padding: 8px 0;">☑️ Timestamps preserve time information</li>
+                    <li style="padding: 8px 0;">☑️ Textual month names converted correctly</li>
+                    <li style="padding: 8px 0;">☑️ Standalone months show Persian equivalent WITHOUT repetition</li>
+                    <li style="padding: 8px 0;">☑️ Dynamic content converts after loading</li>
+                    <li style="padding: 8px 0;">☑️ Table data converts properly</li>
+                    <li style="padding: 8px 0;">☑️ Form attributes updated correctly</li>
+                    <li style="padding: 8px 0;">☑️ No console errors</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Section 11: Auto RTL Test -->
+        <div class="container">
+            <div class="section-header">
+                <span class="icon">↔️</span>
+                <h2>Auto RTL — Persian Text Direction</h2>
+                <span class="badge">Feature Test</span>
+            </div>
+
+            <div class="instruction-box">
+                <h3>📋 How Auto RTL Works | نحوه کارکرد راست‌چین خودکار</h3>
+                <ul>
+                    <li><strong>Rule:</strong> Any block element whose text contains ≥ 20 Persian characters gets <code>dir="rtl"</code> applied automatically</li>
+                    <li><strong>قانون:</strong> هر المان بلاک که متن آن حاوی ۲۰ یا بیشتر کاراکتر فارسی باشد، به‌صورت خودکار <code>dir="rtl"</code> می‌گیرد</li>
+                    <li><strong>Expected:</strong> Persian paragraphs → aligned RIGHT ✅ | Short/English content → unchanged ❌</li>
+                    <li><strong>Toggle:</strong> Can be enabled/disabled from the extension popup</li>
+                </ul>
+            </div>
+
+            <!-- RTL Status Indicator -->
+            <div id="rtl-status-bar" style="background: #e8f5e9; border: 2px solid #4caf50; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: center; font-weight: bold; color: #2e7d32;">
+                ✅ Auto RTL is ON — Persian blocks below should be right-aligned
+            </div>
+
+            <h3 style="color: #764ba2; margin-bottom: 15px;">✅ SHOULD get RTL (≥20 Persian chars)</h3>
+            <div class="test-grid">
+
+                <div class="test-card" id="rtl-test-1">
+                    <span class="label">Persian Paragraph — ✅ Expected: right-aligned, RTL</span>
+                    <div class="value" style="font-size: 0.95em; line-height: 1.8;">
+                        این یک پاراگراف فارسی است که باید به صورت راست‌چین نمایش داده شود. متن این پاراگراف بیش از بیست کاراکتر فارسی دارد.
+                    </div>
+                    <div class="expected">✓ Expected: text-align right, dir=rtl</div>
+                </div>
+
+                <div class="test-card" id="rtl-test-2">
+                    <span class="label">Long Persian Content — ✅ Expected: RTL</span>
+                    <div class="value" style="font-size: 0.95em; line-height: 1.8;">
+                        افزونه پرشینر : تجربه روان فارسی در وب به‌صورت خودکار تمام تاریخ‌های موجود در صفحه را تشخیص داده و تبدیل می‌کند.
+                    </div>
+                    <div class="expected">✓ Expected: RTL applied automatically</div>
+                </div>
+
+                <div class="test-card" id="rtl-test-3">
+                    <span class="label">Mixed Persian + Date — ✅ Expected: RTL</span>
+                    <div class="value" style="font-size: 0.95em; line-height: 1.8;">
+                        تاریخ ثبت‌نام: 2024-11-16 — این رویداد در شهر تهران برگزار می‌شود و بیش از سیصد نفر در آن شرکت خواهند کرد.
+                    </div>
+                    <div class="expected">✓ Expected: RTL + date converted (1403/08/26)</div>
+                </div>
+
+                <div class="test-card" id="rtl-test-4">
+                    <span class="label">News Article Style — ✅ Expected: RTL</span>
+                    <p style="font-size: 0.95em; line-height: 1.8; background: white; padding: 10px; border-radius: 6px;">
+                        به گزارش خبرگزاری، نشست مشترک مدیران ارشد در تاریخ 2025-03-01 در محل سازمان برگزار شد. در این جلسه موضوعات مهمی مورد بحث و بررسی قرار گرفت.
+                    </p>
+                    <div class="expected">✓ Expected: &lt;p&gt; gets dir="rtl"</div>
+                </div>
+
+                <div class="test-card" id="rtl-test-5">
+                    <span class="label">List Items — ✅ Expected: RTL on each &lt;li&gt;</span>
+                    <ul style="background: white; padding: 15px 30px; border-radius: 6px;">
+                        <li>مرحله اول: نصب و راه‌اندازی افزونه در مرورگر کروم انجام می‌شود</li>
+                        <li>مرحله دوم: تمام تاریخ‌های میلادی به شمسی تبدیل می‌شوند</li>
+                        <li>مرحله سوم: متون فارسی به صورت راست‌چین نمایش داده می‌شوند</li>
+                    </ul>
+                    <div class="expected">✓ Expected: each &lt;li&gt; is RTL</div>
+                </div>
+
+                <div class="test-card" id="rtl-test-table">
+                    <span class="label">Table Cell — ✅ Expected: RTL on &lt;td&gt;</span>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 8px;">
+                        <thead>
+                            <tr><th style="background:#667eea;color:white;padding:8px;">نام</th><th style="background:#667eea;color:white;padding:8px;">توضیحات</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding:8px; border:1px solid #ddd;">محمد</td>
+                                <td style="padding:8px; border:1px solid #ddd;">این کاربر در سیستم ثبت‌نام کرده است و دسترسی کامل به تمام امکانات را دارد</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="expected">✓ Expected: long &lt;td&gt; gets RTL</div>
+                </div>
+            </div>
+
+            <h3 style="color: #764ba2; margin: 25px 0 15px;">❌ Should NOT get RTL (< 20 Persian chars or English-only)</h3>
+            <div class="test-grid">
+
+                <div class="test-card" id="rtl-test-eng">
+                    <span class="label">English Only — ❌ Expected: NO RTL change</span>
+                    <div class="value" style="font-size: 0.95em; line-height: 1.8;">
+                        This is a fully English paragraph. The Auto RTL feature should not change the direction of this element because it contains no Persian characters at all.
+                    </div>
+                    <div class="expected" style="background: #fdecea; color: #c62828;">✗ Expected: stays LTR (default)</div>
+                </div>
+
+                <div class="test-card" id="rtl-test-short">
+                    <span class="label">Short Persian (< 20 chars) — ❌ Expected: NO RTL</span>
+                    <div class="value">
+                        سلام دنیا <!-- only ~8 Persian chars -->
+                    </div>
+                    <div class="expected" style="background: #fdecea; color: #c62828;">✗ Expected: NOT converted (too short)</div>
+                </div>
+
+                <div class="test-card" id="rtl-test-mixed-short">
+                    <span class="label">Mostly English, few Persian words — ❌ Expected: NO RTL</span>
+                    <div class="value" style="font-size: 0.95em;">
+                        The user typed کمک in the search box and the system returned 42 results on 2024-01-15.
+                    </div>
+                    <div class="expected" style="background: #fdecea; color: #c62828;">✗ Expected: stays LTR</div>
+                </div>
+
+            </div>
+
+            <!-- Dynamic Persian Content Test -->
+            <h3 style="color: #764ba2; margin: 25px 0 15px;">🔄 Dynamic Content — RTL on Injected Persian Text</h3>
+            <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button onclick="addDynamicPersian()">➕ اضافه کردن متن فارسی پویا</button>
+                    <button class="secondary" onclick="addDynamicEnglish()">➕ Add English Dynamic Text</button>
+                    <button class="warning" onclick="document.getElementById('rtlDynamicContainer').innerHTML=''">🗑️ Clear</button>
+                </div>
+            </div>
+            <div id="rtlDynamicContainer" style="min-height: 60px; border: 2px dashed #667eea; border-radius: 8px; padding: 15px; background: #fafafa;">
+                <p style="color: #999; text-align: center;">محتوای پویا اینجا نمایش داده می‌شود — Dynamic content appears here</p>
+            </div>
+
+            <!-- Verification Checklist -->
+            <div style="background: #e8f5e9; border-radius: 10px; padding: 20px; margin-top: 20px;">
+                <h3 style="color: #2e7d32; margin-bottom: 15px;">✅ Auto RTL Verification Checklist</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 8px 0;">☑️ Persian paragraphs (≥20 chars) are right-aligned</li>
+                    <li style="padding: 8px 0;">☑️ English-only blocks remain left-aligned (default)</li>
+                    <li style="padding: 8px 0;">☑️ Short Persian text (< 20 chars) is NOT affected</li>
+                    <li style="padding: 8px 0;">☑️ List items and table cells with Persian text get RTL</li>
+                    <li style="padding: 8px 0;">☑️ Dynamically added Persian content also gets RTL</li>
+                    <li style="padding: 8px 0;">☑️ Toggle in popup enables/disables the feature</li>
+                    <li style="padding: 8px 0;">☑️ No page layout broken on non-Persian sites</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Logging System
+        function log(message, type = 'info') {
+            const viewer = document.getElementById('logViewer');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            let icon = '🔵';
+            let className = 'log-info';
+            
+            if (type === 'success') {
+                icon = '✅';
+                className = 'log-success';
+            } else if (type === 'error') {
+                icon = '❌';
+                className = 'log-error';
+            }
+            
+            entry.innerHTML = `<span class="log-time">[${time}]</span><span class="${className}">${icon} ${message}</span>`;
+            viewer.appendChild(entry);
+            viewer.scrollTop = viewer.scrollHeight;
+            
+            console.log(`[${time}] ${message}`);
+        }
+
+        // Progress Bar Update
+        function updateProgress(percent) {
+            const bar = document.getElementById('progressBar');
+            bar.style.width = percent + '%';
+            bar.textContent = percent + '%';
+        }
+
+        // Widget Loading Functions
+        function loadWidget(widgetId, delay) {
+            const widget = document.getElementById(widgetId);
+            widget.innerHTML = `<h4>${widget.querySelector('h4').textContent}</h4><div class="loading loading-indicator">⏳ Loading...</div>`;
+            log(`Loading ${widgetId}... (${delay}ms delay)`, 'info');
+            
+            setTimeout(() => {
+                let content = '';
+                
+                if (widgetId === 'widget1') {
+                    content = `
+                        <h4>Widget 1: Resource Overview</h4>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">Resource Created</span>
+                            <div class="value">2024-10-15 08:30:00</div>
+                        </div>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">Last Modified</span>
+                            <div class="value">2024-11-16 14:45:30</div>
+                        </div>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">Next Backup</span>
+                            <div class="value">November 20, 2024</div>
+                        </div>
+                    `;
+                } else if (widgetId === 'widget2') {
+                    content = `
+                        <h4>Widget 2: Activity Log</h4>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">Login Event</span>
+                            <div class="value">2024-11-16 09:15:00</div>
+                        </div>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">Configuration Change</span>
+                            <div class="value">Nov 15, 2024</div>
+                        </div>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">Alert Triggered</span>
+                            <div class="value">15 Nov</div>
+                        </div>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">System Update</span>
+                            <div class="value">11/14/2024</div>
+                        </div>
+                    `;
+                } else if (widgetId === 'widget3') {
+                    content = `
+                        <h4>Widget 3: Performance Metrics</h4>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">Measurement Period</span>
+                            <div class="value">2024-11-01 to 2024-11-16</div>
+                        </div>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">Peak Usage</span>
+                            <div class="value">2024-11-10 15:30:00</div>
+                        </div>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">Last Data Point</span>
+                            <div class="value">November 16, 2024</div>
+                        </div>
+                        <div class="test-card" style="margin: 10px 0;">
+                            <span class="label">Next Report</span>
+                            <div class="value">Dec 1</div>
+                        </div>
+                    `;
+                }
+                
+                widget.innerHTML = content;
+                widget.classList.add('loaded');
+                log(`${widgetId} loaded successfully! Dates should convert.`, 'success');
+            }, delay);
+        }
+
+        function loadAllWidgets() {
+            log('🚀 Loading all widgets...', 'info');
+            updateProgress(0);
+            
+            loadWidget('widget1', 1000);
+            updateProgress(33);
+            
+            setTimeout(() => {
+                loadWidget('widget2', 1000);
+                updateProgress(66);
+            }, 2000);
+            
+            setTimeout(() => {
+                loadWidget('widget3', 1000);
+                updateProgress(100);
+                log('✅ All widgets loaded!', 'success');
+            }, 4000);
+        }
+
+        function updateExisting() {
+            const element = document.getElementById('lastUpdated');
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 19).replace('T', ' ');
+            
+            log('🔄 Updating existing content...', 'info');
+            
+            setTimeout(() => {
+                element.textContent = dateStr;
+                log(`✅ Content updated to: ${dateStr}`, 'success');
+            }, 500);
+        }
+
+        let dateCounter = 0;
+        function addDynamicDate() {
+            dateCounter++;
+            const container = document.getElementById('dynamicContainer');
+            
+            if (dateCounter === 1) {
+                container.innerHTML = '';
+            }
+            
+            container.classList.add('loaded');
+            
+            const formats = [
+                '2024-11-{day}',
+                '11/{day}/2024',
+                '{day}/11/2024',
+                'November {day}, 2024',
+                'Nov {day}',
+                '{day} Nov'
+            ];
+            
+            const day = Math.floor(Math.random() * 28) + 1;
+            const format = formats[Math.floor(Math.random() * formats.length)];
+            const dateStr = format.replace('{day}', day.toString().padStart(2, '0'));
+            
+            const card = document.createElement('div');
+            card.className = 'test-card';
+            card.style.margin = '10px 0';
+            card.innerHTML = `
+                <span class="label">Dynamic Date #${dateCounter}</span>
+                <div class="value">${dateStr}</div>
+            `;
+            
+            container.appendChild(card);
+            log(`➕ Added dynamic date #${dateCounter}: ${dateStr}`, 'success');
+        }
+
+        let rtlDynCounter = 0;
+        const persianSamples = [
+            'این یک پاراگراف پویای فارسی است که باید به‌صورت خودکار راست‌چین شود. افزونه باید راست‌چین را اعمال کند.',
+            'سیستم مدیریت محتوا با موفقیت اطلاعات را ذخیره کرد. تاریخ ثبت: 2025-06-17. لطفاً صفحه را بررسی کنید.',
+            'در این بخش متن فارسی پویا بارگذاری می‌شود تا قابلیت راست‌چین خودکار افزونه تست شود. متن باید راست‌چین باشد.',
+            'گزارش سیستم: تمام عملیات با موفقیت انجام شد. داده‌های کاربران به‌روزرسانی شدند. تاریخ: 2025-01-01.',
+        ];
+        function addDynamicPersian() {
+            rtlDynCounter++;
+            const container = document.getElementById('rtlDynamicContainer');
+            const p = document.createElement('p');
+            p.style.cssText = 'background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 12px; margin: 8px 0;';
+            p.textContent = persianSamples[(rtlDynCounter - 1) % persianSamples.length];
+            container.appendChild(p);
+            log(`➕ Added dynamic Persian block #${rtlDynCounter} — Auto RTL should apply within ~600ms`, 'success');
+        }
+
+        let engDynCounter = 0;
+        const englishSamples = [
+            'This is a dynamically added English paragraph. Auto RTL should NOT change this element direction.',
+            'System notification: backup completed successfully on 2025-06-17. All files are safe and stored.',
+        ];
+        function addDynamicEnglish() {
+            engDynCounter++;
+            const container = document.getElementById('rtlDynamicContainer');
+            const p = document.createElement('p');
+            p.style.cssText = 'background: #f0f8ff; border: 1px solid #2196F3; border-radius: 6px; padding: 12px; margin: 8px 0;';
+            p.textContent = englishSamples[(engDynCounter - 1) % englishSamples.length];
+            container.appendChild(p);
+            log(`➕ Added dynamic English block #${engDynCounter} — Auto RTL should NOT apply`, 'info');
+        }
+
+        function clearLogs() {
+            const viewer = document.getElementById('logViewer');
+            viewer.innerHTML = '<div class="log-entry"><span class="log-time">[00:00:00]</span><span class="log-info">🔵 Logs cleared. System ready.</span></div>';
+            log('🗑️ Logs cleared', 'info');
+        }
+
+        // Page Load
+        window.addEventListener('load', function() {
+            log('📄 Comprehensive test page loaded successfully', 'success');
+            log('🔍 Extension should process all visible dates', 'info');
+            log('💡 Use control panel to test dynamic content loading', 'info');
+            
+            // Update last update time
+            const lastUpdate = document.getElementById('lastUpdate');
+            if (lastUpdate) {
+                const now = new Date();
+                lastUpdate.textContent = now.toISOString().slice(0, 19).replace('T', ' ');
+            }
+            
+            // Auto-load first widget after 2 seconds
+            setTimeout(() => {
+                log('🔄 Auto-loading Widget 1 to simulate dashboard...', 'info');
+                loadWidget('widget1', 2000);
+            }, 2000);
+        });
+
+        // Monitor for repetition bugs
+        let textSnapshots = {};
+        setInterval(() => {
+            document.querySelectorAll('.value').forEach((element, index) => {
+                const text = element.textContent;
+                const key = `value_${index}`;
+                
+                if (textSnapshots[key] && textSnapshots[key] !== text) {
+                    // Check for repetition pattern like "Nov (آبان) (آبان)"
+                    const repetitionPattern = /\([^)]+\).*\([^)]+\)/;
+                    if (repetitionPattern.test(text)) {
+                        console.error(`❌ REPETITION BUG DETECTED at index ${index}: ${text}`);
+                        log(`❌ REPETITION BUG: ${text}`, 'error');
+                    }
+                }
+                
+                textSnapshots[key] = text;
+            });
+        }, 2000);
+    </script>
+    <script>window.__Persianer = { autoRtl: true };</script>
+    <script src="config.js"></script>
+    <script src="logger.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
