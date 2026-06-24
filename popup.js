@@ -21,9 +21,12 @@
   };
 
   const el = {
-    statusText: document.getElementById('status-text'),
-    statusDot: document.getElementById('status-dot'),
+    statusPill: document.getElementById('status-pill'),
+    statusPillText: document.getElementById('status-pill-text'),
     statusHost: document.getElementById('status-host'),
+    cardDate: document.getElementById('card-date'),
+    cardRtl: document.getElementById('card-rtl'),
+    cardFont: document.getElementById('card-font'),
     profileList: document.getElementById('profile-list'),
     manageBtn: document.getElementById('manage-btn')
   };
@@ -73,15 +76,36 @@
   }
 
   /**
+   * Set a feature card's active/inactive visual state.
+   * تنظیم وضعیت بصری فعال/غیرفعال کارت ویژگی.
+   */
+  function setFeatureCard(card, isActive) {
+    if (!card) return;
+    const statusEl = card.querySelector('.feature-status');
+    if (isActive) {
+      card.classList.remove('inactive');
+      card.classList.add('active');
+      if (statusEl) statusEl.textContent = 'فعال';
+    } else {
+      card.classList.remove('active');
+      card.classList.add('inactive');
+      if (statusEl) statusEl.textContent = 'غیرفعال';
+    }
+  }
+
+  /**
    * Render the whole popup from currentState + currentHostname.
    * رندر کل popup بر اساس وضعیت و نام میزبان جاری.
    */
   function render() {
     if (!currentState) {
-      el.statusText.textContent = 'وضعیت: نامشخص';
-      el.statusDot.classList.add('disabled');
+      el.statusPill.className = 'status-pill inactive';
+      el.statusPillText.textContent = 'نامشخص';
       el.statusHost.textContent = '';
       el.profileList.innerHTML = '';
+      setFeatureCard(el.cardDate, false);
+      setFeatureCard(el.cardRtl, false);
+      setFeatureCard(el.cardFont, false);
       return;
     }
 
@@ -95,16 +119,18 @@
     const anyFeatureOn = s.dateConversion || s.persianRtl || s.fullPageRtl;
     const offActive = PersianerProfiles.isOffActive(state);
 
+    // Update feature cards
+    setFeatureCard(el.cardDate, s.dateConversion);
+    setFeatureCard(el.cardRtl, s.persianRtl || s.fullPageRtl);
+    setFeatureCard(el.cardFont, s.forceFont || (s.font && s.font !== 'Sahel'));
+
+    // Update status pill
     if (offActive || !anyFeatureOn) {
-      el.statusDot.classList.add('disabled');
-      el.statusText.textContent = offActive ? 'وضعیت: خاموش' : 'وضعیت: غیرفعال برای این صفحه';
+      el.statusPill.className = 'status-pill inactive';
+      el.statusPillText.textContent = offActive ? 'خاموش' : 'غیرفعال';
     } else {
-      el.statusDot.classList.remove('disabled');
-      const parts = [];
-      if (s.dateConversion) parts.push('تبدیل تاریخ');
-      if (s.persianRtl) parts.push('راست‌چین خودکار');
-      if (s.fullPageRtl) parts.push('صفحه راست‌چین');
-      el.statusText.textContent = 'وضعیت: ' + (parts.length ? parts.join(' و ') : 'فعال');
+      el.statusPill.className = 'status-pill active';
+      el.statusPillText.textContent = 'فعال';
     }
 
     // Build profile list in profileOrder
