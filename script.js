@@ -196,7 +196,7 @@
                 }
             }
             
-            log.warn('⚠️ detectDateFormat: No matching pattern found', dateStr);
+            log.info('⚠️ detectDateFormat: No matching pattern found', dateStr);
             return null;
         } catch (error) {
             log.error('❌ detectDateFormat: Unexpected error', error, dateStr);

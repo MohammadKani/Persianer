@@ -70,7 +70,7 @@
   }
 
   /**
-   * The six built-in profiles. `builtin:true` means shipped by the extension.
+   * Built-in profiles. `builtin:true` means shipped by the extension.
    * `deletable:false` / `editable:false` lock down special profiles.
    */
   function buildBuiltinProfiles() {
@@ -95,25 +95,79 @@
       },
       default: {
         id: DEFAULT_ID,
-        name: 'پیش‌فرض',
+        name: 'تبدیل تاریخ میلادی به شمسی',
         builtin: true,
         deletable: false,
         editable: true,
-        color: '#4299e1',
+        color: '#48bb78',
         settings: {
           dateConversion: true,
+          persianRtl: false,
+          minPersianChars: DEFAULT_MIN_CHARS,
+          fullPageRtl: false,
+          font: '',
+          forceFont: false,
+          blacklist: ['*.github.com', '*.yadak.com'],
+          whitelist: []
+        }
+      },
+      smartRtl: {
+        id: 'smartRtl',
+        name: 'راست چین سازی هوشمند',
+        builtin: true,
+        deletable: true,
+        editable: true,
+        color: '#48bb78',
+        settings: {
+          dateConversion: false,
           persianRtl: true,
+          minPersianChars: 2,
+          fullPageRtl: false,
+          font: 'Sahel',
+          forceFont: true,
+          blacklist: ['*.github.com', '*.yadak.com'],
+          whitelist: []
+        }
+      },
+      fullRtl: {
+        id: 'fullRtl',
+        name: 'راست چین سازی کل صفحه',
+        builtin: true,
+        deletable: true,
+        editable: true,
+        color: '#48bb78',
+        settings: {
+          dateConversion: false,
+          persianRtl: false,
+          minPersianChars: DEFAULT_MIN_CHARS,
+          fullPageRtl: true,
+          font: '',
+          forceFont: false,
+          blacklist: ['*.github.com', '*.yadak.com'],
+          whitelist: ['openrouter.ai']
+        }
+      },
+      forceFont: {
+        id: 'forceFont',
+        name: 'اعمال اجباری فونت فارسی',
+        builtin: true,
+        deletable: true,
+        editable: true,
+        color: '#48bb78',
+        settings: {
+          dateConversion: false,
+          persianRtl: false,
           minPersianChars: DEFAULT_MIN_CHARS,
           fullPageRtl: false,
           font: 'Sahel',
-          forceFont: false,
-          blacklist: [],
+          forceFont: true,
+          blacklist: ['*.github.com', '*.yadak.com'],
           whitelist: []
         }
       },
       google: {
         id: 'google',
-        name: 'موتور جستجوی گوگل',
+        name: 'بهبود جستجوی Google',
         builtin: true,
         deletable: true,
         editable: true,
@@ -129,27 +183,9 @@
           whitelist: ['www.google.com']
         }
       },
-      claude: {
-        id: 'claude',
-        name: 'هوش مصنوعی Claud',
-        builtin: true,
-        deletable: true,
-        editable: true,
-        color: '#d97757',
-        settings: {
-          dateConversion: true,
-          persianRtl: true,
-          minPersianChars: DEFAULT_MIN_CHARS,
-          fullPageRtl: false,
-          font: 'Sahel',
-          forceFont: false,
-          blacklist: [],
-          whitelist: ['^claude\\.ai$', '^.*\\.claude\\.ai$']
-        }
-      },
       chatgpt: {
         id: 'chatgpt',
-        name: 'هوش مصنوعی ChatGPT',
+        name: 'بهبود ChatGPT',
         builtin: true,
         deletable: true,
         editable: true,
@@ -160,9 +196,45 @@
           minPersianChars: DEFAULT_MIN_CHARS,
           fullPageRtl: false,
           font: 'Sahel',
-          forceFont: false,
+          forceFont: true,
           blacklist: [],
           whitelist: ['^chatgpt\\.com$', '^chat\\.openai\\.com$', '^.*\\.openai\\.com$']
+        }
+      },
+      claude: {
+        id: 'claude',
+        name: 'بهبود Claud',
+        builtin: true,
+        deletable: true,
+        editable: true,
+        color: '#d97757',
+        settings: {
+          dateConversion: true,
+          persianRtl: true,
+          minPersianChars: 2,
+          fullPageRtl: false,
+          font: 'Sahel',
+          forceFont: false,
+          blacklist: [],
+          whitelist: ['^claude\\.ai$', '^.*\\.claude\\.ai$']
+        }
+      },
+      github: {
+        id: 'github',
+        name: 'بهبود github.com',
+        builtin: true,
+        deletable: true,
+        editable: true,
+        color: '#48bb78',
+        settings: {
+          dateConversion: false,
+          persianRtl: false,
+          minPersianChars: DEFAULT_MIN_CHARS,
+          fullPageRtl: false,
+          font: 'Sahel',
+          forceFont: true,
+          blacklist: [],
+          whitelist: ['*.github.com']
         }
       },
       // copilot: {
@@ -186,8 +258,8 @@
     };
   }
 
-  var DEFAULT_PROFILE_ORDER = [OFF_ID, DEFAULT_ID, 'claude', 'chatgpt', 'copilot', 'google'];
-  var DEFAULT_ACTIVE = [ DEFAULT_ID, 'claude', 'chatgpt', 'copilot', 'google'];
+  var DEFAULT_PROFILE_ORDER = [OFF_ID, DEFAULT_ID, 'smartRtl', 'fullRtl', 'forceFont', 'google', 'chatgpt', 'claude', 'copilot', 'github'];
+  var DEFAULT_ACTIVE = [DEFAULT_ID, 'smartRtl', 'forceFont', 'google', 'chatgpt', 'claude', 'copilot', 'github'];
 
   /**
    * Build a fresh default state object.
@@ -590,7 +662,7 @@
         errors.push('بلک‌لیست - الگوی نامعتبر: ' + e.pattern + ' (' + e.message + ')');
       });
       if (typeof s.minPersianChars !== 'number' ||
-          s.minPersianChars < 0 || !isFinite(s.minPersianChars)) {
+        s.minPersianChars < 0 || !isFinite(s.minPersianChars)) {
         errors.push('حداقل تعداد کاراکتر باید عددی نامنفی باشد.');
       }
     }

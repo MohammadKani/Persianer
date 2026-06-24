@@ -15,9 +15,9 @@
 
 
 
-[![Download Persianer](https://img.shields.io/badge/Download-ZIP%20v2.0.0-1f7a4c?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MohammadKani/Persianer/releases/download/2.0.0/Persianer_2.0.0.zip)
+[![Download Persianer](https://img.shields.io/badge/Download-ZIP%20v2.0.1-1f7a4c?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MohammadKani/Persianer/releases/download/2.0.1/Persianer_2.0.1.zip)
 
-**دانلود سریع افزونه: [Persianer_2.0.0.zip](https://github.com/MohammadKani/Persianer/releases/download/2.0.0/Persianer_2.0.0.zip)**
+**دانلود سریع افزونه: [Persianer_2.0.1.zip](https://github.com/MohammadKani/Persianer/releases/download/2.0.1/Persianer_2.0.1.zip)**
 
 </div>
 
@@ -292,11 +292,11 @@
 
 ### از فایل ZIP (کاربر عادی)
 
-1. [Persianer_2.0.0.zip](https://github.com/MohammadKani/Persianer/releases/download/2.0.0/Persianer_2.0.0.zip) را دانلود و از حالت فشرده خارج کنید.
+1. [Persianer_2.0.1.zip](https://github.com/MohammadKani/Persianer/releases/download/2.0.1/Persianer_2.0.1.zip) را دانلود و از حالت فشرده خارج کنید.
 2. در Chrome بروید به: `chrome://extensions/`
 3. گزینه **Developer mode** را روشن کنید.
 4. روی **Load unpacked** بزنید.
-5. پوشه `Persianer_2.0.0` (یا `build-prod`) را انتخاب کنید.
+5. پوشه `Persianer_2.0.1` (یا `build-prod`) را انتخاب کنید.
 
 ### از سورس (توسعه‌دهنده)
 
@@ -599,7 +599,7 @@ Persianer is a beginner-friendly Chrome extension that makes the web more comfor
 
 ### Install
 
-1. Download [Persianer_2.0.0.zip](https://github.com/MohammadKani/Persianer/releases/download/2.0.0/Persianer_2.0.0.zip) and extract it.
+1. Download [Persianer_2.0.1.zip](https://github.com/MohammadKani/Persianer/releases/download/2.0.1/Persianer_2.0.1.zip) and extract it.
 2. Open `chrome://extensions/`.
 3. Enable **Developer mode**.
 4. Click **Load unpacked** and select the extracted folder (or `build-prod/` if you built from source).
@@ -643,7 +643,7 @@ Usage:
 
 ### Install
 
-1. Download [Persianer_2.0.0.zip](https://github.com/MohammadKani/Persianer/releases/download/2.0.0/Persianer_2.0.0.zip) and extract it.
+1. Download [Persianer_2.0.1.zip](https://github.com/MohammadKani/Persianer/releases/download/2.0.1/Persianer_2.0.1.zip) and extract it.
 2. Open `chrome://extensions/`.
 3. Enable **Developer mode**.
 4. Click **Load unpacked** and select the extracted folder (or `build-prod/` if you built from source).

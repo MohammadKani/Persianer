@@ -9,6 +9,12 @@ argument-hint: >-
 
 # Persianer Development Skill
 
+
+
+```powershell
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir=C:\chrome-debug
+```
+
 A focused workflow for editing, testing, and shipping the **Persianer** Chrome extension.
 Optimized for **simple code, simple debugging, and a fantastic Persian RTL UX**.
 
