@@ -1,0 +1,16 @@
+{
+  "name": "persianer",
+  "version": "1.0.0",
+  "description": "<div align=\"center\">",
+  "main": "background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gh-mmk:MohammadKani/Persianer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

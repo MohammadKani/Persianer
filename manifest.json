@@ -1,8 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Persianer",
-  "name__fa": "پرشینر : تجربه روان فارسی در وب",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "پرشینر : تجربه روان فارسی در وب",
   "author": "محمد کنی",
   
@@ -18,7 +17,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": ["profiles.js", "content.js"],
       "run_at": "document_end",
       "all_frames": false
     }
@@ -26,6 +25,11 @@
   
   "background": {
     "service_worker": "background.js"
+  },
+
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
   },
   
   "action": {
@@ -46,7 +50,7 @@
   
   "web_accessible_resources": [
     {
-      "resources": ["config.js", "logger.js", "script.js"],
+      "resources": ["config.js", "logger.js", "script.js", "profiles.js"],
       "matches": ["<all_urls>"]
     }
   ],

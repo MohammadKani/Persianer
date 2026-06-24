@@ -43,6 +43,8 @@ $excludeItems = @(
     '.gitignore',
     '.github',
     '.docs',
+    '.playwright-mcp',
+    '.chrome-test-profile*',
     '*.md',
     '*.ps1',
     '*.bat',
