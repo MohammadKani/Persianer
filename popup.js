@@ -87,7 +87,7 @@
 
     const state = currentState;
     const host = currentHostname;
-    el.statusHost.textContent = host || '';
+    el.statusHost.textContent = host ? 'دامنه: ' + host : '';
 
     // Effective settings for this tab
     const result = PersianerProfiles.computeEffective(state, host);
@@ -101,10 +101,10 @@
     } else {
       el.statusDot.classList.remove('disabled');
       const parts = [];
-      if (s.dateConversion) parts.push('تاریخ');
-      if (s.persianRtl) parts.push('راست‌چین');
-      if (s.fullPageRtl) parts.push('RTL صفحه');
-      el.statusText.textContent = 'وضعیت: ' + (parts.length ? parts.join(' + ') : 'فعال');
+      if (s.dateConversion) parts.push('تبدیل تاریخ');
+      if (s.persianRtl) parts.push('راست‌چین خودکار');
+      if (s.fullPageRtl) parts.push('صفحه راست‌چین');
+      el.statusText.textContent = 'وضعیت: ' + (parts.length ? parts.join(' و ') : 'فعال');
     }
 
     // Build profile list in profileOrder

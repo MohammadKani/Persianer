@@ -1,19 +1,42 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Persianer Extension</title>
   <style>
-    body {
+    /* Persianer Popup — matches options.css design system (Catppuccin Mocha) */
+    * {
       box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #1e1e2e;
+      --bg-sidebar: #181825;
+      --bg-card: #313244;
+      --bg-input: #45475a;
+      --border: #45475a;
+      --text: #cdd6f4;
+      --text-dim: #a6adc8;
+      --primary: #23bc27;
+      --accent: #89b4fa;
+      --accent-2: #4299e1;
+      --danger: #f38ba8;
+      --success: #a6e3a1;
+      --warn: #f9e2af;
+      --radius: 10px;
+    }
+
+    body {
       margin: 0;
       padding: 0;
       width: 400px;
       min-height: 320px;
-      font-family: Sahel, system-ui, 'Segoe UI', Tahoma, Arial, sans-serif;
-      background: linear-gradient(135deg, #3b3b3b 0%, #393939 100%);
-      color: #2d3748;
+      font-family: Sahel, system-ui, 'Segoe UI', Tahoma, Arial, sans-serif,
+        'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji';
+      background: var(--bg);
+      color: var(--text);
       overflow: hidden;
     }
 
@@ -24,24 +47,46 @@
       gap: 14px;
     }
 
+    /* ---- Header / branding ---- */
     .header {
-      text-align: center;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 2px;
+      justify-content: center;
     }
 
-    .title {
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .brand {
       font-size: 16px;
-      font-weight: bold;
-      color: #ffffff;
-      margin: 0 0 2px 0;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      font-weight: 800;
+      letter-spacing: 0;
+      color: var(--accent);
+      text-align: center;
+      margin: 0;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin: 0;
     }
 
     /* ---- Status card ---- */
     .status-card {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       padding: 14px 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .status-indicator {
@@ -53,27 +98,26 @@
     .status-text {
       font-size: 14px;
       font-weight: 600;
-      color: #4a5568;
+      color: var(--text);
     }
 
     .status-dot {
-      width: 9px;
-      height: 9px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      background-color: #48bb78;
-      box-shadow: 0 0 6px rgba(72, 187, 120, 0.6);
+      background-color: var(--success);
+      box-shadow: 0 0 8px rgba(166, 227, 161, 0.6);
     }
 
     .status-dot.disabled {
-      background-color: #e53e3e;
-      box-shadow: 0 0 6px rgba(229, 62, 62, 0.5);
+      background-color: var(--danger);
+      box-shadow: 0 0 8px rgba(243, 139, 168, 0.5);
     }
 
     .status-host {
       margin-top: 6px;
       font-size: 11px;
-      color: #718096;
-      direction: ltr;
+      color: var(--text-dim);
       text-align: right;
       unicode-bidi: embed;
       white-space: nowrap;
@@ -83,16 +127,16 @@
 
     /* ---- Profile list ---- */
     .profiles-section {
-      background: rgba(255, 255, 255, 0.92);
-      border-radius: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       padding: 10px 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .section-title {
       font-size: 12px;
       font-weight: 700;
-      color: #4a5568;
+      color: var(--text-dim);
       margin: 2px 2px 8px;
       letter-spacing: 0.2px;
     }
@@ -113,19 +157,20 @@
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.15s ease;
+      border: 1px solid transparent;
     }
 
     .profile-row:hover {
-      background-color: rgba(66, 153, 225, 0.08);
+      background: rgba(137, 180, 250, 0.08);
     }
 
-    /* ---- Toggle switch ---- */
+    /* ---- Toggle switch (matches options.css) ---- */
     .profile-toggle {
       position: relative;
       display: inline-flex;
       align-items: center;
-      width: 32px;
-      height: 18px;
+      width: 38px;
+      height: 20px;
       flex: 0 0 auto;
       cursor: pointer;
     }
@@ -140,32 +185,32 @@
     .profile-toggle-slider {
       position: absolute;
       inset: 0;
-      background: #e2e8f0;
-      border-radius: 18px;
+      background: var(--bg-input);
+      border-radius: 20px;
       transition: background 0.25s ease, box-shadow 0.25s ease;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     .profile-toggle-slider::before {
       content: '';
       position: absolute;
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       left: 2px;
       top: 2px;
-      background: #fff;
+      background: var(--text-dim);
       border-radius: 50%;
       transition: transform 0.25s ease, background 0.25s ease;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
     }
 
-    .profile-toggle-input:checked + .profile-toggle-slider {
-      background: #48bb78;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15), 0 0 6px rgba(72, 187, 120, 0.35);
+    .profile-toggle-input:checked+.profile-toggle-slider {
+      background: var(--success);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 8px rgba(166, 227, 161, 0.3);
     }
 
-    .profile-toggle-input:checked + .profile-toggle-slider::before {
-      transform: translateX(14px);
+    .profile-toggle-input:checked+.profile-toggle-slider::before {
+      transform: translateX(18px);
       background: #fff;
     }
 
@@ -174,13 +219,13 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      box-shadow: 0 0 0 2px rgba(255,255,255,0.8);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06);
     }
 
     .profile-name {
       flex: 1 1 auto;
       font-size: 13px;
-      color: #2d3748;
+      color: var(--text);
       font-weight: 500;
       white-space: nowrap;
       overflow: hidden;
@@ -190,8 +235,8 @@
     .match-badge {
       flex: 0 0 auto;
       font-size: 10px;
-      color: #2f855a;
-      background: #c6f6d5;
+      color: var(--success);
+      background: rgba(166, 227, 161, 0.18);
       padding: 2px 7px;
       border-radius: 10px;
       font-weight: 600;
@@ -204,7 +249,7 @@
       height: 22px;
       border: none;
       background: transparent;
-      color: #a0aec0;
+      color: var(--text-dim);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -214,8 +259,8 @@
     }
 
     .edit-gear:hover {
-      background: rgba(66, 153, 225, 0.15);
-      color: #4299e1;
+      background: rgba(137, 180, 250, 0.15);
+      color: var(--accent);
     }
 
     .edit-gear svg {
@@ -223,40 +268,39 @@
       height: 15px;
     }
 
-    /* ---- Manage button ---- */
+    /* ---- Manage button (matches btn-primary) ---- */
     .manage-btn {
       width: 100%;
       padding: 11px;
       border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #4299e1, #3182ce);
+      border-radius: 8px;
+      background: var(--accent-2);
       color: #fff;
       font-size: 13px;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
-      transition: opacity 0.2s ease, transform 0.1s ease;
-      box-shadow: 0 3px 8px rgba(66, 153, 225, 0.3);
+      transition: opacity 0.15s ease, transform 0.1s ease;
     }
 
     .manage-btn:hover {
-      opacity: 0.92;
+      opacity: 0.9;
     }
 
     .manage-btn:active {
-      transform: scale(0.98);
+      transform: scale(0.97);
     }
 
     /* ---- Footer ---- */
     .footer {
       text-align: center;
       font-size: 10px;
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--text-dim);
       line-height: 1.6;
     }
 
     .footer a {
-      color: rgba(255, 255, 255, 0.9);
+      color: var(--accent);
       text-decoration: none;
       transition: opacity 0.2s ease;
     }
@@ -266,16 +310,29 @@
     }
 
     /* Scrollbar */
-    .profile-list::-webkit-scrollbar { width: 6px; }
-    .profile-list::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 3px; }
-    .profile-list::-webkit-scrollbar-track { background: transparent; }
+    .profile-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .profile-list::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .profile-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="header">
-      <h1 class="title" style="color:#FFC107">P E R S I A N E R</h1>
-      <h1 class="title">تجربه روان فارسی در وب</h1>
+      <img src="icons/icon48.png" alt="Persianer" class="brand-icon">
+      <div>
+        <h1 class="brand">P E R S I A N E R</h1>
+        <p class="brand-sub">تجربه روان فارسی در وب</p>
+      </div>
     </div>
 
     <div class="status-card">
@@ -283,8 +340,7 @@
         <span class="status-text" id="status-text">وضعیت: …</span>
         <div class="status-dot" id="status-dot"></div>
       </div>
-        دامنه: 
-      <span class="status-host" id="status-host"></span>
+      <div class="status-host" id="status-host"></div>
     </div>
 
     <div class="profiles-section">
@@ -297,11 +353,13 @@
     <div class="footer">
       نسخه 2.0.0 | ساخته شده با 💚 برای جامعه فارسی‌زبان
       <br>
-      <a href="https://github.com/MohammadKani/Persianer" target="_blank" rel="noopener noreferrer">GitHub.com/MohammadKani</a>
+      <a href="https://github.com/MohammadKani/Persianer" target="_blank"
+        rel="noopener noreferrer">GitHub.com/MohammadKani</a>
     </div>
   </div>
 
   <script src="profiles.js"></script>
   <script src="popup.js"></script>
 </body>
+
 </html>
