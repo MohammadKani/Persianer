@@ -127,6 +127,7 @@
         e.preventDefault(); // keep input focus
         el.fieldFont.value = f;
         closeFontCombobox();
+        updateForcefontEnabled();
         checkDirty();
       });
       list.appendChild(li);
@@ -501,9 +502,9 @@
     el.fieldBlacklist.value = (s.blacklist || []).join('\n');
 
     updateMincharsEnabled();
-    updateForcefontEnabled();
     updateBadges(p);
     updateLockState(p);
+    updateForcefontEnabled();
     closeFontCombobox();
     el.validationErrors.classList.add('hidden');
     el.validationErrors.innerHTML = '';
@@ -564,11 +565,12 @@
    */
   function updateForcefontEnabled() {
     const hasFont = !!(el.fieldFont.value && el.fieldFont.value.trim());
+    const isLocked = el.fieldFont.disabled && el.fieldName.disabled;
     if (!hasFont) {
       el.fieldForcefont.checked = false;
     }
-    el.fieldForcefont.disabled = !hasFont;
-    el.fieldForcefont.closest('.toggle-row').style.opacity = hasFont ? '1' : '0.5';
+    el.fieldForcefont.disabled = isLocked || !hasFont;
+    el.fieldForcefont.closest('.toggle-row').style.opacity = (hasFont && !isLocked) ? '1' : '0.5';
   }
 
   /**
@@ -797,6 +799,8 @@
       if (!el.fontComboboxList.classList.contains('hidden')) {
         renderFontCombobox(el.fieldFont.value);
       }
+      updateForcefontEnabled();
+      checkDirty();
     });
     el.fieldFont.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeFontCombobox();

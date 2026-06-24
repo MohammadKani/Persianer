@@ -326,7 +326,28 @@
   }
 
   /**
-   * Compile a list of regex strings into RegExp objects, skipping invalid ones.
+   * Convert a wildcard pattern (containing *) into an anchored regex string.
+   *
+   * Supported syntax:
+   *   *.yadak.com   → ^(.*\.)?yadak\.com$   (matches yadak.com + any subdomain)
+   *   yadak.*       → ^yadak\..*$            (matches yadak.com, yadak.org, …)
+   *   *             → ^.*$                   (matches everything)
+   *
+   * Patterns WITHOUT * are treated as raw regex (backward-compatible).
+   */
+  function wildcardToRegex(pattern) {
+    // Escape all regex special characters EXCEPT *
+    var escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+    // *.domain → (.*\.)?domain  — matches the bare domain AND any subdomain
+    escaped = escaped.replace(/\*\\\./g, '(.*\\.)?');
+    // Remaining * → .*  (any sequence)
+    escaped = escaped.replace(/\*/g, '.*');
+    return '^' + escaped + '$';
+  }
+
+  /**
+   * Compile a list of pattern strings into RegExp objects, skipping invalid ones.
+   * Patterns containing * are treated as wildcards; others as raw regex.
    * Returns { regexes: RegExp[], errors: [{pattern, message}] }.
    */
   function compileRegexList(patterns) {
@@ -336,7 +357,8 @@
     patterns.forEach(function (p) {
       if (typeof p !== 'string' || !p.trim()) return;
       try {
-        regexes.push(new RegExp(p));
+        var regexStr = p.indexOf('*') !== -1 ? wildcardToRegex(p) : p;
+        regexes.push(new RegExp(regexStr));
       } catch (e) {
         errors.push({ pattern: p, message: e && e.message ? e.message : String(e) });
       }

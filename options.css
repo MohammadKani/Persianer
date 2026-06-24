@@ -916,6 +916,15 @@ fieldset.toggles legend {
   transform: translateX(-18px);
 }
 
+/* Disabled switch — dimmed, no pointer events */
+.switch:disabled + .switch-track {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.toggle-row:has(.switch:disabled) {
+  cursor: not-allowed;
+}
+
 /* ---- Actions ---- */
 .form-actions {
   display: flex;
