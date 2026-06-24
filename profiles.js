@@ -48,6 +48,7 @@
   // Built-in profile ids (reserved; user profiles use generated ids).
   var OFF_ID = 'off';
   var DEFAULT_ID = 'default';
+  var IGNORE_LIST = ['*.github.com', '*.yadak.com', '*.claude.ai', '*.openai.com', 'www.google.com']; 
 
   /**
    * Default settings object factory (fresh copy each call).
@@ -107,7 +108,7 @@
           fullPageRtl: false,
           font: '',
           forceFont: false,
-          blacklist: ['*.github.com', '*.yadak.com'],
+          blacklist: IGNORE_LIST,
           whitelist: []
         }
       },
@@ -125,7 +126,7 @@
           fullPageRtl: false,
           font: 'Sahel',
           forceFont: true,
-          blacklist: ['*.github.com', '*.yadak.com'],
+          blacklist: IGNORE_LIST,
           whitelist: []
         }
       },
@@ -143,7 +144,7 @@
           fullPageRtl: true,
           font: '',
           forceFont: false,
-          blacklist: ['*.github.com', '*.yadak.com'],
+          blacklist: IGNORE_LIST,
           whitelist: ['openrouter.ai']
         }
       },
@@ -161,7 +162,7 @@
           fullPageRtl: false,
           font: 'Sahel',
           forceFont: true,
-          blacklist: ['*.github.com', '*.yadak.com'],
+          blacklist: IGNORE_LIST,
           whitelist: []
         }
       },
