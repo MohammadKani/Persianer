@@ -179,22 +179,22 @@
       if (isMatched && !isOff) {
         const badge = document.createElement('span');
         badge.className = 'match-badge';
-        badge.textContent = 'منطبق با این صفحه';
+        badge.textContent = 'فعال در این صفحه';
         row.appendChild(badge);
       }
 
-      // edit gear (only for editable profiles)
-      if (p.editable !== false) {
-        const gear = document.createElement('button');
-        gear.className = 'edit-gear';
-        gear.title = 'ویرایش پروفایل';
-        gear.innerHTML = GEAR_SVG;
-        gear.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openOptionsForProfile(id);
-        });
-        row.appendChild(gear);
-      }
+      // // edit gear (only for editable profiles)
+      // if (p.editable !== false) {
+      //   const gear = document.createElement('button');
+      //   gear.className = 'edit-gear';
+      //   gear.title = 'ویرایش پروفایل';
+      //   gear.innerHTML = GEAR_SVG;
+      //   gear.addEventListener('click', (e) => {
+      //     e.stopPropagation();
+      //     openOptionsForProfile(id);
+      //   });
+      //   row.appendChild(gear);
+      // }
 
       row.addEventListener('click', () => toggleProfile(id));
       el.profileList.appendChild(row);
