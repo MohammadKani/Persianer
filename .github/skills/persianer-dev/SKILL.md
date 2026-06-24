@@ -138,7 +138,7 @@ Use this for verbose logging. **Production must set it to `false`** and the buil
 - Reason: migration, validation, and `Off`-exclusivity all live there in one place.
 
 ### 5.4 CSP-safe transport between worlds
-- ISOLATED → MAIN: write `data-persianer-*` attributes on `<html>`, then inject `script.js`.
+- ISOLATED → MAIN: write `data-gd2pd-*` attributes on `<html>`, then inject `script.js`.
 - Never use `postMessage` for settings (it breaks under strict CSP).
 - Live re-apply uses **CustomEvents** on `document`:
   `Persianer-rtl-toggle`, `Persianer-fullrtl-toggle`, `Persianer-font-change`, `Persianer-reconvert`.
@@ -177,8 +177,8 @@ For any other file, edit directly — this rule is unique to `script.js` because
 |---|---|
 | Popup shows nothing | `chrome://extensions` → Errors button on Persianer card |
 | Profile toggle does nothing | `background.js` console (service worker) — message routed? |
-| Dates not converting | Page console → `PersianerConverter` global present? `<html data-persianer-dateconv>` set? |
-| RTL not applied | `<html data-persianer-autortl>` / `data-persianer-fullrtl` set? Is `script.js` even loaded? (`typeof PersianerConverter`) |
+| Dates not converting | Page console → `PersianerConverter` global present? `<html data-gd2pd-dateconv>` set? |
+| RTL not applied | `<html data-gd2pd-autortl>` / `data-gd2pd-fullrtl` set? Is `script.js` even loaded? (`typeof PersianerConverter`) |
 | "Off" doesn't kill features | `isOffActive(state)` check in `profiles.js` — bug in merge? |
 | Build missing files | `Get-ChildItem build-dev` — compare with §2 map |
 | Regex does nothing | Compile error swallowed? Check `PersianerProfiles.compileRegexes` warn logs |
@@ -189,10 +189,10 @@ For any other file, edit directly — this rule is unique to `script.js` because
 () => {
   const html = document.documentElement;
   return {
-    dateConv: html.dataset.persianerDateconv,
-    autoRtl:  html.dataset.persianerAutortl,
-    fullRtl:  html.dataset.persianerFullrtl,
-    font:     html.dataset.persianerFont,
+    dateConv: html.dataset.gd2pdDateconv,
+    autoRtl:  html.dataset.gd2pdAutortl,
+    fullRtl:  html.dataset.gd2pdFullrtl,
+    font:     html.dataset.gd2pdFont,
     hasMain:  typeof window.PersianerConverter !== 'undefined',
   };
 }
@@ -243,7 +243,6 @@ If the MCP tools return only a sandboxed `about:blank` and not the user's real t
 
 - ❌ Not a build script — use `build.ps1`.
 - ❌ Not a tester — use the test pages + MCP.
-- ❌ Not a designer — the look is already settled (Zero Omega sidebar + Persian RTL cards).
 - ❌ Not a refactor guide — keep changes scoped; larger refactors go through a separate proposal.
 
 Keep this skill short. If a section grows past ~40 lines, split it into a referenced file.
