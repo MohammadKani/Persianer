@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پرشینر — مدیریت پروفایل‌ها</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <button type="button" class="sidebar-home" id="sidebar-home" title="بازگشت به خانه" aria-label="بازگشت به خانه">
+          <img src="icons/icon128.png" alt="" class="sidebar-home-icon">
+          <div class="brand">P E R S I A N E R</span>
+        </button>
+      </div>
+      <div class="sidebar-list" id="profile-list"></div>
+      <button class="new-profile-btn" id="new-profile-btn">+ پروفایل جدید</button>
+    </aside>
+
+    <!-- Main form -->
+    <main class="main">
+      <header class="main-header">
+
+        <h2 id="form-title">پروفایل‌ها</h2>
+        <span id="form-badge" class="form-badge hidden space-to-end"></span>
+        <button type="button" class="back-btn hidden" id="back-btn" title="بازگشت به لیست پروفایل‌ها"
+          aria-label="بازگشت">
+          بازگشت
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" style="transform: scaleX(-1);">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </header>
+
+      <div id="profile-cards" class="profile-cards">
+        <div class="profile-cards-header">
+          <p class="profile-cards-sub">برای ویرایش، روی هر کارت بزنید یا کارت «پروفایل جدید» را انتخاب کنید.</p>
+        </div>
+        <div class="profile-cards-grid" id="profile-cards-grid"></div>
+      </div>
+
+      <!-- Reset to defaults section -->
+      <div id="reset-section" class="reset-section">
+        <div class="reset-section-content">
+          <div class="reset-icon">🔄</div>
+          <div class="reset-text">
+            <strong>بازنشانی به تنظیمات اولیه</strong>
+            <p>تمام پروفایل‌های ساخته‌شده توسط شما حذف می‌شوند و پروفایل‌های پیش‌فرض به حالت اولیه برمی‌گردند.</p>
+          </div>
+          <button type="button" class="btn btn-reset" id="reset-btn">بازنشانی همه</button>
+        </div>
+      </div>
+
+      <div id="form-empty" class="form-empty hidden">
+        <p>برای ویرایش، یک پروفایل از لیست کنار انتخاب کنید یا «پروفایل جدید» بسازید.</p>
+      </div>
+
+      <form id="profile-form" class="profile-form hidden">
+        <input type="hidden" id="field-id">
+
+        <div class="form-actions form-actions-top">
+          <button type="button" class="btn btn-danger hidden" id="delete-btn">حذف پروفایل</button>
+          <span id="unsaved-indicator" class="unsaved-indicator hidden" aria-live="polite">⚠ تغییرات ذخیره نشده</span>
+          <button type="submit" class="btn btn-primary" id="save-btn">ذخیره</button>
+        </div>
+
+        <div id="validation-errors" class="validation-errors hidden"></div>
+
+        <div class="row">
+          <label for="field-name">نام پروفایل</label>
+          <input type="text" id="field-name" maxlength="40" autocomplete="off">
+        </div>
+
+        <div class="row">
+          <label for="field-color">رنگ</label>
+          <div class="color-wrap">
+            <input type="color" id="field-color" value="#48bb78">
+            <span id="color-hex" class="color-hex">#48bb78</span>
+          </div>
+        </div>
+
+        <fieldset class="toggles">
+          <legend>ویژگی‌ها</legend>
+
+          <label class="toggle-row">
+            <span class="toggle-label">تبدیل تاریخ میلادی به شمسی</span>
+            <input type="checkbox" id="field-dateConv" class="switch">
+            <span class="switch-track"></span>
+          </label>
+
+          <label class="toggle-row">
+            <span class="toggle-label">راست‌چین جملات فارسی</span>
+            <input type="checkbox" id="field-persianRtl" class="switch">
+            <span class="switch-track"></span>
+          </label>
+
+          <div class="row nested" id="minchars-row">
+            <label for="field-minchars">حداقل تعداد کاراکتر فارسی برای راست‌چین</label>
+            <input type="number" id="field-minchars" min="1" max="500" step="1" value="10">
+          </div>
+
+          <label class="toggle-row">
+            <span class="toggle-label">راست‌چین کل صفحه (dir=rtl روی body)</span>
+            <input type="checkbox" id="field-fullrtl" class="switch">
+            <span class="switch-track"></span>
+          </label>
+        </fieldset>
+
+        <div class="row">
+          <label for="field-font">فونت</label>
+          <div class="combobox" id="font-combobox">
+            <input type="text" id="field-font" autocomplete="off" value="Sahel" placeholder="نام فونت">
+            <button type="button" class="combobox-btn" id="font-combobox-btn" tabindex="-1"
+              aria-label="باز کردن لیست فونت">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <ul class="combobox-list hidden" id="font-combobox-list"></ul>
+          </div>
+        </div>
+
+        <label class="toggle-row">
+          <span class="toggle-label">اعمال اجباری فونت روی همه عناصر (با !important)</span>
+          <input type="checkbox" id="field-forcefont" class="switch">
+          <span class="switch-track"></span>
+        </label>
+
+        <div class="row">
+          <label for="field-whitelist">وایت‌لیست (هر الگو در یک خط — regex)</label>
+          <textarea id="field-whitelist" rows="4" dir="ltr" placeholder="^example\\.com$"></textarea>
+        </div>
+
+        <div class="row">
+          <label for="field-blacklist">بلک‌لیست (هر الگو در یک خط — regex)</label>
+          <textarea id="field-blacklist" rows="4" dir="ltr" placeholder="^ads\\.example\\.com$"></textarea>
+        </div>
+
+      </form>
+
+      <!-- Off profile: fancy "extension is asleep" panel instead of the disabled form -->
+      <section id="off-view" class="off-view hidden" aria-labelledby="off-title">
+        <div class="off-stage">
+          <div class="off-power" aria-hidden="true">
+            <span class="off-power-ring"></span>
+            <span class="off-power-ring off-power-ring-2"></span>
+            <span class="off-power-core">😴</span>
+          </div>
+          <span class="off-badge">پروفایل خاموش • غیرقابل ویرایش</span>
+          <h2 id="off-title" class="off-title">پرشینر خواب است</h2>
+          <p class="off-sub">
+            وقتی این پروفایل فعال باشد، پرشینر روی همه‌ی صفحات خاموش می‌شود؛ هیچ تاریخی
+            تبدیل نمی‌شود، هیچ راست‌چینی اعمال نمی‌گردد و هیچ فونتی جایگزین نمی‌شود. این
+            تنها پروفایلی است که با روشن شدن هر پروفایل دیگر، خودکار از حالت فعال خارج
+            می‌شود.
+          </p>
+
+          <ul class="off-chips">
+            <li class="off-chip">
+              <span class="off-chip-icon">📅</span>
+              <span>تبدیل تاریخ میلادی به شمسی متوقف شد</span>
+            </li>
+            <li class="off-chip">
+              <span class="off-chip-icon">↩️</span>
+              <span>راست‌چین کردن جملات و صفحات فارسی متوقف شد</span>
+            </li>
+            <li class="off-chip">
+              <span class="off-chip-icon">🔤</span>
+              <span>اعمال فونت فارسی متوقف شد</span>
+            </li>
+          </ul>
+
+          <button type="button" class="btn off-cta" id="off-activate-btn">
+            <span class="off-cta-icon" aria-hidden="true">⚡</span>
+            <span>روشن کردن پرشینر</span>
+          </button>
+          <p class="off-cta-note">با این کار پروفایل پیش‌فرض فعال می‌شود و این پروفایل خاموش می‌گردد.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="profiles.js"></script>
+  <script src="options.js"></script>
+</body>
+
+</html>
