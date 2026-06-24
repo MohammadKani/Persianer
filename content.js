@@ -222,7 +222,7 @@
       }));
       document.dispatchEvent(new CustomEvent('Persianer-font-change', {
         bubbles: true,
-        detail: { font: request.settings.font }
+        detail: { font: request.settings.font, forceFont: request.settings.forceFont }
       }));
       if (request.settings.dateConversion) {
         triggerConversionEvent();

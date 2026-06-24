@@ -446,9 +446,11 @@
     if (scalarProfile) {
       merged.font = scalarProfile.settings.font || DEFAULT_FONT;
       merged.minPersianChars = scalarProfile.settings.minPersianChars || DEFAULT_MIN_CHARS;
+      merged.forceFont = !!scalarProfile.settings.forceFont;
     } else {
       merged.font = DEFAULT_FONT;
       merged.minPersianChars = DEFAULT_MIN_CHARS;
+      merged.forceFont = false;
     }
     return { settings: merged, matchedProfileIds: matched.map(function (p) { return p.id; }) };
   }
