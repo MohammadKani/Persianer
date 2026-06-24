@@ -163,11 +163,11 @@
 
       row.appendChild(toggleContainer);
 
-      // color dot
-      const dot = document.createElement('div');
-      dot.className = 'color-dot';
-      dot.style.background = p.color || '#9e9e9e';
-      row.appendChild(dot);
+      // // color dot
+      // const dot = document.createElement('div');
+      // dot.className = 'color-dot';
+      // dot.style.background = p.color || '#9e9e9e';
+      // row.appendChild(dot);
 
       // name
       const name = document.createElement('div');
