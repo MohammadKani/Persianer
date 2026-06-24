@@ -48,7 +48,7 @@
   // Built-in profile ids (reserved; user profiles use generated ids).
   var OFF_ID = 'off';
   var DEFAULT_ID = 'default';
-  var IGNORE_LIST = ['*.github.com', '*.yadak.com', '*.claude.ai', '*.openai.com', 'www.google.com']; 
+  var IGNORE_LIST = ['*.github.com', '*.yadak.com', '*.claude.ai', '*.chatgpt.com', '*.openai.com', 'www.google.com']; 
 
   /**
    * Default settings object factory (fresh copy each call).
