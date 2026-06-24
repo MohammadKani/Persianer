@@ -40,7 +40,9 @@
     'Arial'
   ];
 
-  var DEFAULT_FONT = 'Sahel';
+  // Default font is empty — system continues without a custom font unless a
+  // profile explicitly sets one. Built-in profiles set their own font values.
+  var DEFAULT_FONT = '';
   var DEFAULT_MIN_CHARS = 10;
 
   // Built-in profile ids (reserved; user profiles use generated ids).
@@ -56,7 +58,7 @@
       persianRtl: false,
       minPersianChars: DEFAULT_MIN_CHARS,
       fullPageRtl: false,
-      font: DEFAULT_FONT,
+      font: '',
       forceFont: false,
       blacklist: [],
       whitelist: []
@@ -85,7 +87,7 @@
           persianRtl: false,
           minPersianChars: DEFAULT_MIN_CHARS,
           fullPageRtl: false,
-          font: DEFAULT_FONT,
+          font: '',
           forceFont: false,
           blacklist: [],
           whitelist: []
@@ -103,7 +105,7 @@
           persianRtl: true,
           minPersianChars: DEFAULT_MIN_CHARS,
           fullPageRtl: false,
-          font: DEFAULT_FONT,
+          font: 'Sahel',
           forceFont: false,
           blacklist: [],
           whitelist: []
@@ -121,9 +123,9 @@
           persianRtl: true,
           minPersianChars: DEFAULT_MIN_CHARS,
           fullPageRtl: false,
-          font: DEFAULT_FONT,
+          font: 'Sahel',
           forceFont: true,
-          blacklist: [],  
+          blacklist: [],
           whitelist: ['www.google.com']
         }
       },
@@ -139,7 +141,7 @@
           persianRtl: true,
           minPersianChars: DEFAULT_MIN_CHARS,
           fullPageRtl: false,
-          font: DEFAULT_FONT,
+          font: 'Sahel',
           forceFont: false,
           blacklist: [],
           whitelist: ['^claude\\.ai$', '^.*\\.claude\\.ai$']
@@ -157,7 +159,7 @@
           persianRtl: false,
           minPersianChars: DEFAULT_MIN_CHARS,
           fullPageRtl: false,
-          font: DEFAULT_FONT,
+          font: 'Sahel',
           forceFont: false,
           blacklist: [],
           whitelist: ['^chatgpt\\.com$', '^chat\\.openai\\.com$', '^.*\\.openai\\.com$']
@@ -175,7 +177,7 @@
           persianRtl: true,
           minPersianChars: DEFAULT_MIN_CHARS,
           fullPageRtl: false,
-          font: DEFAULT_FONT,
+          font: 'Sahel',
           forceFont: false,
           blacklist: [],
           whitelist: ['^github\\.com$', '^.*\\.github\\.com$', '^copilot\\.github\\.com$']
@@ -445,11 +447,12 @@
     });
     var scalarProfile = mostSpecific(matched, state);
     if (scalarProfile) {
-      merged.font = scalarProfile.settings.font || DEFAULT_FONT;
+      // Font may be empty string — that means "no custom font, use site default".
+      merged.font = scalarProfile.settings.font || '';
       merged.minPersianChars = scalarProfile.settings.minPersianChars || DEFAULT_MIN_CHARS;
       merged.forceFont = !!scalarProfile.settings.forceFont;
     } else {
-      merged.font = DEFAULT_FONT;
+      merged.font = '';
       merged.minPersianChars = DEFAULT_MIN_CHARS;
       merged.forceFont = false;
     }

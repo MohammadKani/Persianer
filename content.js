@@ -103,7 +103,7 @@
     html.setAttribute('data-persianer-autortl', settings.persianRtl ? 'true' : 'false');
     html.setAttribute('data-persianer-fullrtl', settings.fullPageRtl ? 'true' : 'false');
     html.setAttribute('data-persianer-minchars', String(settings.minPersianChars));
-    html.setAttribute('data-persianer-font', settings.font || 'Sahel');
+    html.setAttribute('data-persianer-font', settings.font || '');
     html.setAttribute('data-persianer-forcefont', settings.forceFont ? 'true' : 'false');
   }
 
