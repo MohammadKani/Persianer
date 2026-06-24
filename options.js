@@ -501,6 +501,7 @@
     el.fieldBlacklist.value = (s.blacklist || []).join('\n');
 
     updateMincharsEnabled();
+    updateForcefontEnabled();
     updateBadges(p);
     updateLockState(p);
     closeFontCombobox();
@@ -557,6 +558,20 @@
   }
 
   /**
+   * "اعمال اجباری فونت" (forceFont) only makes sense when a font is set.
+   * If the font field is empty, disable the forceFont checkbox.
+   * اعمال اجباری فونت فقط وقتی معنی دارد که فونتی تنظیم شده باشد.
+   */
+  function updateForcefontEnabled() {
+    const hasFont = !!(el.fieldFont.value && el.fieldFont.value.trim());
+    if (!hasFont) {
+      el.fieldForcefont.checked = false;
+    }
+    el.fieldForcefont.disabled = !hasFont;
+    el.fieldForcefont.closest('.toggle-row').style.opacity = hasFont ? '1' : '0.5';
+  }
+
+  /**
    * "راست‌چین جملات فارسی" (persianRtl) and "راست‌چین کل صفحه" (fullPageRtl)
    * are mutually exclusive — enabling one disables the other.
    * راست‌چین جملات و راست‌چین کل صفحه متضاد هستند.
@@ -592,7 +607,7 @@
         persianRtl: el.fieldPersianRtl.checked,
         minPersianChars: parseInt(el.fieldMinchars.value, 10) || PersianerProfiles.DEFAULT_MIN_CHARS,
         fullPageRtl: el.fieldFullrtl.checked,
-        font: el.fieldFont.value.trim() || PersianerProfiles.DEFAULT_FONT,
+        font: el.fieldFont.value.trim() || '',
         forceFont: el.fieldForcefont.checked,
         whitelist: lines(el.fieldWhitelist.value),
         blacklist: lines(el.fieldBlacklist.value)
