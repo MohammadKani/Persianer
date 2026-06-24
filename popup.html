@@ -271,6 +271,36 @@
       color: var(--text-dim);
     }
 
+    .feature-detail {
+      font-size: 9px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.3;
+      color: var(--text-dim);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .feature-card.active .feature-detail {
+      color: var(--text);
+    }
+
+    .feature-detail.hidden {
+      display: none;
+    }
+
+    .feature-detail .force-badge {
+      display: inline-block;
+      background: rgba(166, 227, 161, 0.2);
+      color: var(--success);
+      padding: 0 5px;
+      border-radius: 8px;
+      font-size: 8px;
+      margin-right: 3px;
+    }
+
     /* ---- Profile list ---- */
     .profiles-section {
       background: var(--bg-card);
@@ -525,6 +555,7 @@
           </div>
           <div class="feature-name">فونت فارسی</div>
           <div class="feature-status">غیرفعال</div>
+          <div class="feature-detail hidden" id="card-font-detail"></div>
         </div>
       </div>
     </div>

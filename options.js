@@ -495,7 +495,7 @@
     el.fieldPersianRtl.checked = !!s.persianRtl;
     el.fieldMinchars.value = s.minPersianChars || PersianerProfiles.DEFAULT_MIN_CHARS;
     el.fieldFullrtl.checked = !!s.fullPageRtl;
-    el.fieldFont.value = s.font || PersianerProfiles.DEFAULT_FONT;
+    el.fieldFont.value = s.font || '';
     el.fieldForcefont.checked = !!s.forceFont;
     el.fieldWhitelist.value = (s.whitelist || []).join('\n');
     el.fieldBlacklist.value = (s.blacklist || []).join('\n');

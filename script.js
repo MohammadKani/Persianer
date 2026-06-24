@@ -1037,7 +1037,7 @@
         }
         function readFont() {
             var f = document.documentElement.getAttribute('data-persianer-font');
-            return (f && f.trim()) ? f.trim() : 'Sahel';
+            return (f && f.trim()) ? f.trim() : '';
         }
         function readForceFont() {
             var ff = document.documentElement.getAttribute('data-persianer-forcefont');
@@ -1060,10 +1060,13 @@
         // تزریق CSS یک‌بار. فونت از طریق پروفایل قابل پیکربندی است.
         // وقتی forceFont روشن است، !important اضافه می‌شود تا CSS سایت را بازنویسی کند.
         function buildRtlCss() {
-            var fontFamily = FORCE_FONT
-                ? 'font-family: ' + ACTIVE_FONT + ' !important;'
-                : 'font-family: ' + ACTIVE_FONT + ', "Segoe UI", Tahoma;';
-            return '.' + RTL_CLASS + ' { direction: rtl; ' + fontFamily + ' }';
+            var fontRule = '';
+            if (ACTIVE_FONT) {
+                fontRule = FORCE_FONT
+                    ? 'font-family: ' + ACTIVE_FONT + ' !important;'
+                    : 'font-family: ' + ACTIVE_FONT + ', "Segoe UI", Tahoma;';
+            }
+            return '.' + RTL_CLASS + ' { direction: rtl; ' + fontRule + ' }';
         }
         (function injectRtlStyle() {
             var styleId = 'persianer-rtl-style';
@@ -1107,6 +1110,7 @@
         // Force font on all elements for full-page RTL mode.
         // اعمال اجباری فونت روی همه عناصر در حالت RTL کل صفحه.
         function applyFullPageFont() {
+            if (!ACTIVE_FONT) return; // no font configured — nothing to force
             var styleId = 'persianer-fullpage-font';
             var existing = document.getElementById(styleId);
             if (existing) return;

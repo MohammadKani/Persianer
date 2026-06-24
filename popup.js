@@ -25,6 +25,7 @@
     cardDate: document.getElementById('card-date'),
     cardRtl: document.getElementById('card-rtl'),
     cardFont: document.getElementById('card-font'),
+    cardFontDetail: document.getElementById('card-font-detail'),
     profileList: document.getElementById('profile-list'),
     manageBtn: document.getElementById('manage-btn')
   };
@@ -92,6 +93,33 @@
   }
 
   /**
+   * Update the font feature card with font name and force status.
+   * به‌روزرسانی کارت فونت با نام فونت و وضعیت اعمال اجباری.
+   */
+  function updateFontCard(settings) {
+    const hasFont = !!(settings.font && settings.font.trim());
+    const isForced = !!settings.forceFont;
+    const isActive = hasFont;
+
+    setFeatureCard(el.cardFont, isActive);
+
+    // Show font name + force badge in the detail line
+    if (el.cardFontDetail) {
+      if (hasFont) {
+        let detail = settings.font.trim();
+        if (isForced) {
+          detail = '<span class="force-badge">اجباری</span>' + detail;
+        }
+        el.cardFontDetail.innerHTML = detail;
+        el.cardFontDetail.classList.remove('hidden');
+      } else {
+        el.cardFontDetail.textContent = '';
+        el.cardFontDetail.classList.add('hidden');
+      }
+    }
+  }
+
+  /**
    * Render the whole popup from currentState + currentHostname.
    * رندر کل popup بر اساس وضعیت و نام میزبان جاری.
    */
@@ -101,7 +129,7 @@
       el.profileList.innerHTML = '';
       setFeatureCard(el.cardDate, false);
       setFeatureCard(el.cardRtl, false);
-      setFeatureCard(el.cardFont, false);
+      updateFontCard({ font: '', forceFont: false });
       return;
     }
 
@@ -118,7 +146,7 @@
     // Update feature cards
     setFeatureCard(el.cardDate, s.dateConversion);
     setFeatureCard(el.cardRtl, s.persianRtl || s.fullPageRtl);
-    setFeatureCard(el.cardFont, s.forceFont || (s.font && s.font !== 'Sahel'));
+    updateFontCard(s);
 
     // Update status pill
     // (status pill removed from UI — feature cards now convey status)
