@@ -10,55 +10,44 @@
       margin: 0;
       padding: 0;
       width: 400px;
-      min-height: 250px;
-      font-family: Sahel, system-ui,'Segoe UI', Tahoma, Arial, sans-serif;
+      min-height: 320px;
+      font-family: Sahel, system-ui, 'Segoe UI', Tahoma, Arial, sans-serif;
       background: linear-gradient(135deg, #3b3b3b 0%, #393939 100%);
       color: #2d3748;
       overflow: hidden;
     }
 
     .container {
-      padding: 20px;
-      height: 100%;
+      padding: 18px 20px 16px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 8px;
     }
 
     .title {
       font-size: 16px;
       font-weight: bold;
       color: #ffffff;
-      margin: 0 0 4px 0;
+      margin: 0 0 2px 0;
       text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
 
-    .subtitle {
-      font-size: 16px;
-      color: #e2e8f0;
-      margin: 0;
-      opacity: 0.9;
-    }
-
+    /* ---- Status card ---- */
     .status-card {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
     }
 
     .status-indicator {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
     }
 
     .status-text {
@@ -68,80 +57,202 @@
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background-color: #48bb78;
+      box-shadow: 0 0 6px rgba(72, 187, 120, 0.6);
     }
 
     .status-dot.disabled {
       background-color: #e53e3e;
+      box-shadow: 0 0 6px rgba(229, 62, 62, 0.5);
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+    .status-host {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #718096;
+      direction: ltr;
+      text-align: right;
+      unicode-bidi: embed;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .toggle-section {
+    /* ---- Profile list ---- */
+    .profiles-section {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #4a5568;
+      margin: 2px 2px 8px;
+      letter-spacing: 0.2px;
+    }
+
+    .profile-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .profile-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-top: 1px solid #e2e8f0;
+      gap: 10px;
+      padding: 7px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
     }
 
-    .toggle-label {
-      font-size: 14px;
+    .profile-row:hover {
+      background-color: rgba(66, 153, 225, 0.08);
+    }
+
+    /* ---- Toggle switch ---- */
+    .profile-toggle {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 32px;
+      height: 18px;
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+
+    .profile-toggle-input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .profile-toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #e2e8f0;
+      border-radius: 18px;
+      transition: background 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 2px;
+      top: 2px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.25s ease, background 0.25s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+
+    .profile-toggle-input:checked + .profile-toggle-slider {
+      background: #48bb78;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15), 0 0 6px rgba(72, 187, 120, 0.35);
+    }
+
+    .profile-toggle-input:checked + .profile-toggle-slider::before {
+      transform: translateX(14px);
+      background: #fff;
+    }
+
+    .color-dot {
+      flex: 0 0 auto;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.8);
+    }
+
+    .profile-name {
+      flex: 1 1 auto;
+      font-size: 13px;
       color: #2d3748;
       font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .toggle-switch {
-      position: relative;
-      width: 48px;
-      height: 24px;
-      background-color: #cbd5e0;
-      border-radius: 12px;
+    .match-badge {
+      flex: 0 0 auto;
+      font-size: 10px;
+      color: #2f855a;
+      background: #c6f6d5;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .edit-gear {
+      flex: 0 0 auto;
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: transparent;
+      color: #a0aec0;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      transition: all 0.15s ease;
     }
 
-    .toggle-switch.active {
-      background-color: #4299e1;
+    .edit-gear:hover {
+      background: rgba(66, 153, 225, 0.15);
+      color: #4299e1;
     }
 
-    .toggle-slider {
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      width: 20px;
-      height: 20px;
-      background-color: white;
-      border-radius: 50%;
-      transition: transform 0.3s ease;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    .edit-gear svg {
+      width: 15px;
+      height: 15px;
     }
 
-    .toggle-switch.active .toggle-slider {
-      transform: translateX(-24px);
+    /* ---- Manage button ---- */
+    .manage-btn {
+      width: 100%;
+      padding: 11px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #4299e1, #3182ce);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 3px 8px rgba(66, 153, 225, 0.3);
     }
 
-    .info-section {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 12px;
-      color: #4a5568;
-      line-height: 1.4;
-      text-align: center;
+    .manage-btn:hover {
+      opacity: 0.92;
     }
 
+    .manage-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* ---- Footer ---- */
     .footer {
-      margin-top: auto;
       text-align: center;
       font-size: 10px;
       color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
     }
 
     .footer a {
@@ -153,6 +264,11 @@
     .footer a:hover {
       opacity: 0.8;
     }
+
+    /* Scrollbar */
+    .profile-list::-webkit-scrollbar { width: 6px; }
+    .profile-list::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 3px; }
+    .profile-list::-webkit-scrollbar-track { background: transparent; }
   </style>
 </head>
 <body>
@@ -160,37 +276,32 @@
     <div class="header">
       <h1 class="title" style="color:#FFC107">P E R S I A N E R</h1>
       <h1 class="title">تجربه روان فارسی در وب</h1>
-      <!-- <h1 class="title">پرشینر : تجربه روان فارسی در وب</h1> -->
-      <!-- <p class="subtitle">تاریخ فارسی | راست‌‌‌چین فارسی</p> -->
     </div>
+
     <div class="status-card">
       <div class="status-indicator">
-        <span class="status-text" id="status-text">وضعیت: فعال</span>
+        <span class="status-text" id="status-text">وضعیت: …</span>
         <div class="status-dot" id="status-dot"></div>
       </div>
-      <div class="toggle-section">
-        <label class="toggle-label" for="toggle-switch">تبدیل خودکار تاریخ میلادی به شمسی</label>
-        <div class="toggle-switch active" id="toggle-switch">
-          <div class="toggle-slider"></div>
-        </div>
-      </div>
-      <div class="toggle-section">
-        <label class="toggle-label" for="rtl-toggle-switch">راست‌چین متون دارای عبارت فارسی</label>
-        <div class="toggle-switch active" id="rtl-toggle-switch">
-          <div class="toggle-slider"></div>
-        </div>
-      </div>
+        دامنه: 
+      <span class="status-host" id="status-host"></span>
     </div>
+
+    <div class="profiles-section">
+      <div class="section-title">پروفایل‌های فعال</div>
+      <div class="profile-list" id="profile-list"></div>
+    </div>
+
+    <button class="manage-btn" id="manage-btn">مدیریت پروفایل‌ها</button>
+
     <div class="footer">
-      نسخه 1.2.0 | ساخته شده با 💚 برای جامعه فارسی‌زبان
+      نسخه 2.0.0 | ساخته شده با 💚 برای جامعه فارسی‌زبان
       <br>
       <a href="https://github.com/MohammadKani/Persianer" target="_blank" rel="noopener noreferrer">GitHub.com/MohammadKani</a>
-      <br>
-      <span style="color:gray">
-        05.03.28
-      </span>
     </div>
   </div>
+
+  <script src="profiles.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

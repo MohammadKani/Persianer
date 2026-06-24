@@ -1,200 +1,265 @@
 /**
- * Popup Script - Controls extension UI and state
- * اسکریپت Popup - کنترل رابط کاربری و وضعیت افزونه
+ * Popup Script - Profile-based UI controller
+ * اسکریپت Popup - کنترلر رابط کاربری مبتنی بر پروفایل
+ *
+ * نمایش:
+ *  - وضعیت کلی (آیا برای تب جاری هیچ ویژگی فعالی هست؟)
+ *  - لیست پروفایل‌ها با چک‌باکس فعال‌سازی، نقطه رنگ، نام،
+ *    نشان «منطبق با این صفحه» و دکمه ویرایش (باز کردن صفحه تنظیمات)
+ *  - دکمه «مدیریت پروفایل‌ها»
  */
 
-(function() {
+(function () {
   'use strict';
 
-  // Simple logging wrapper for popup
-  // حلقه‌بندی ساده لاگ‌گیری برای popup
-  const IS_DEV = false; // Set by build script
+  const IS_DEV = false;
   const log = {
     debug: IS_DEV ? console.log.bind(console) : () => {},
     info: IS_DEV ? console.info.bind(console) : () => {},
     warn: IS_DEV ? console.warn.bind(console) : () => {},
-    error: console.error.bind(console) // Always log errors
+    error: console.error.bind(console)
   };
 
-  const toggleSwitch = document.getElementById('toggle-switch');
-  const rtlToggleSwitch = document.getElementById('rtl-toggle-switch');
-  const statusDot = document.getElementById('status-dot');
-  const statusText = document.getElementById('status-text');
+  const el = {
+    statusText: document.getElementById('status-text'),
+    statusDot: document.getElementById('status-dot'),
+    statusHost: document.getElementById('status-host'),
+    profileList: document.getElementById('profile-list'),
+    manageBtn: document.getElementById('manage-btn')
+  };
+
+  let currentState = null;
+  let currentHostname = '';
+
+  // SVG icons
+  const GEAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
 
   /**
-   * Update UI based on extension state
-   * به‌روزرسانی رابط کاربری بر اساس وضعیت افزونه
+   * Get the hostname of the current active tab.
+   * گرفتن نام میزبان تب فعال فعلی.
    */
-  function updateUI(enabled, autoRtlEnabled) {
-    if (enabled) {
-      toggleSwitch.classList.add('active');
-    } else {
-      toggleSwitch.classList.remove('active');
-    }
-    // Status dot + text reflect whether ANY feature is active
-    // دات و متن وضعیت نشان‌دهنده فعال بودن حداقل یکی از ویژگی‌ها هستند
-    const anyActive = enabled || autoRtlEnabled;
-    if (anyActive) {
-      statusDot.classList.remove('disabled');
-      if (enabled && autoRtlEnabled) {
-        statusText.textContent = 'وضعیت:  فعال';
-        // statusText.textContent = 'وضعیت: تاریخ + راست‌چین فعال';
-      } else if (enabled) {
-        statusText.textContent = 'وضعیت:  فعال';
-        // statusText.textContent = 'وضعیت: تبدیل تاریخ فعال';
-      } else {
-        statusText.textContent = 'وضعیت:  فعال';
-        // statusText.textContent = 'وضعیت: راست‌چین فعال';
-      }
-    } else {
-      statusDot.classList.add('disabled');
-      statusText.textContent = 'وضعیت: غیرفعال';
-    }
+  function getCurrentHostname() {
+    return new Promise((resolve) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs && tabs[0];
+        if (tab && tab.url) {
+          try {
+            resolve(new URL(tab.url).hostname || '');
+          } catch (e) {
+            resolve('');
+          }
+        } else {
+          resolve('');
+        }
+      });
+    });
   }
 
   /**
-   * Update RTL toggle UI
-   * به‌روزرسانی رابط کاربری سوئیچ راست‌چین
-   */
-  function updateRtlUI(enabled) {
-    if (enabled) {
-      rtlToggleSwitch.classList.add('active');
-    } else {
-      rtlToggleSwitch.classList.remove('active');
-    }
-  }
-
-  /**
-   * Load current extension state
-   * بارگذاری وضعیت فعلی افزونه
+   * Load the full profile state from background (which reads chrome.storage.sync).
+   * بارگذاری وضعیت کامل پروفایل‌ها از پس‌زمینه.
    */
   function loadState() {
-    chrome.storage.sync.get(['enabled', 'autoRtlEnabled'], function(result) {
-      const enabled = result.enabled !== false;
-      const autoRtlEnabled = result.autoRtlEnabled !== false;
-      updateUI(enabled, autoRtlEnabled);
-      updateRtlUI(autoRtlEnabled);
-      log.debug('Persianer Popup: Current state:', enabled ? 'enabled' : 'disabled',
-        '| Auto RTL:', autoRtlEnabled ? 'enabled' : 'disabled');
-    });
-  }
-
-  /**
-   * Handle toggle switch change
-   * مدیریت تغییر سوئیچ فعال/غیرفعال
-   */
-  function handleToggle() {
-    const enabled = toggleSwitch.classList.contains('active');
-    const newState = !enabled;
-    
-    log.debug('Persianer Popup: Toggle changed to:', newState ? 'enabled' : 'disabled');
-    
-    // Update storage
-    // به‌روزرسانی ذخیره‌سازی
-    chrome.storage.sync.set({ enabled: newState }, function() {
-      if (chrome.runtime.lastError) {
-        log.error('Persianer Popup: Error saving state:', chrome.runtime.lastError);
-        return;
-      }
-      
-      log.debug('Persianer Popup: State saved successfully');
-      updateRtlUI(rtlToggleSwitch.classList.contains('active'));
-      // Defer full UI update until after reload
-
-      // Send message to background script
-      // ارسال پیام به اسکریپت پس‌زمینه
-      chrome.runtime.sendMessage({
-        action: 'toggle',
-        enabled: newState,
-        reloadTabs: true
-      }, function(response) {
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage({ action: 'getProfiles' }, (resp) => {
         if (chrome.runtime.lastError) {
-          log.error('Persianer Popup: Error sending message:', chrome.runtime.lastError);
+          log.error('Popup: getProfiles error:', chrome.runtime.lastError);
+          resolve(null);
           return;
         }
-        
-        if (response && response.success) {
-          log.debug('Persianer Popup: Extension state updated and tabs reloading');
-          showConfirmation();
-        }
+        resolve(resp && resp.success ? resp.state : null);
       });
     });
   }
 
   /**
-   * Show brief confirmation message
-   * نمایش پیام تأیید کوتاه
+   * Render the whole popup from currentState + currentHostname.
+   * رندر کل popup بر اساس وضعیت و نام میزبان جاری.
    */
-  function showConfirmation() {
-    statusText.textContent = 'در حال بارگذاری...';
-    setTimeout(function() { loadState(); }, 2000);
-  }
+  function render() {
+    if (!currentState) {
+      el.statusText.textContent = 'وضعیت: نامشخص';
+      el.statusDot.classList.add('disabled');
+      el.statusHost.textContent = '';
+      el.profileList.innerHTML = '';
+      return;
+    }
 
-  /**
-   * Handle RTL toggle switch change
-   * مدیریت تغییر سوئیچ RTL
-   */
-  function handleRtlToggle() {
-    const enabled = rtlToggleSwitch.classList.contains('active');
-    const newState = !enabled;
+    const state = currentState;
+    const host = currentHostname;
+    el.statusHost.textContent = host || '';
 
-    log.debug('Persianer Popup: RTL toggle changed to:', newState ? 'enabled' : 'disabled');
+    // Effective settings for this tab
+    const result = PersianerProfiles.computeEffective(state, host);
+    const s = result.settings;
+    const anyFeatureOn = s.dateConversion || s.persianRtl || s.fullPageRtl;
+    const offActive = PersianerProfiles.isOffActive(state);
 
-    chrome.storage.sync.set({ autoRtlEnabled: newState }, function() {
-      if (chrome.runtime.lastError) {
-        log.error('Persianer Popup: Error saving RTL state:', chrome.runtime.lastError);
-        return;
+    if (offActive || !anyFeatureOn) {
+      el.statusDot.classList.add('disabled');
+      el.statusText.textContent = offActive ? 'وضعیت: خاموش' : 'وضعیت: غیرفعال برای این صفحه';
+    } else {
+      el.statusDot.classList.remove('disabled');
+      const parts = [];
+      if (s.dateConversion) parts.push('تاریخ');
+      if (s.persianRtl) parts.push('راست‌چین');
+      if (s.fullPageRtl) parts.push('RTL صفحه');
+      el.statusText.textContent = 'وضعیت: ' + (parts.length ? parts.join(' + ') : 'فعال');
+    }
+
+    // Build profile list in profileOrder
+    const order = state.profileOrder || [];
+    const active = state.activeProfileIds || [];
+    const matchedIds = result.matchedProfileIds || [];
+
+    el.profileList.innerHTML = '';
+    order.forEach((id) => {
+      const p = state.profiles[id];
+      if (!p) return;
+      const isActive = active.indexOf(id) !== -1;
+      const isMatched = matchedIds.indexOf(id) !== -1;
+      const isOff = id === PersianerProfiles.OFF_ID;
+
+      const row = document.createElement('div');
+      row.className = 'profile-row';
+      row.dataset.id = id;
+      row.title = p.name || id;
+
+      // toggle switch
+      const toggleContainer = document.createElement('label');
+      toggleContainer.className = 'profile-toggle';
+      toggleContainer.title = isActive ? 'غیرفعال کردن پروفایل' : 'فعال کردن پروفایل';
+
+      const toggleInput = document.createElement('input');
+      toggleInput.type = 'checkbox';
+      toggleInput.checked = isActive;
+      toggleInput.className = 'profile-toggle-input';
+
+      const toggleSlider = document.createElement('span');
+      toggleSlider.className = 'profile-toggle-slider';
+
+      toggleContainer.appendChild(toggleInput);
+      toggleContainer.appendChild(toggleSlider);
+      toggleContainer.addEventListener('click', (e) => e.stopPropagation());
+
+      toggleInput.addEventListener('change', () => toggleProfile(id));
+
+      row.appendChild(toggleContainer);
+
+      // color dot
+      const dot = document.createElement('div');
+      dot.className = 'color-dot';
+      dot.style.background = p.color || '#9e9e9e';
+      row.appendChild(dot);
+
+      // name
+      const name = document.createElement('div');
+      name.className = 'profile-name';
+      name.textContent = p.name || id;
+      row.appendChild(name);
+
+      // match badge
+      if (isMatched && !isOff) {
+        const badge = document.createElement('span');
+        badge.className = 'match-badge';
+        badge.textContent = 'منطبق با این صفحه';
+        row.appendChild(badge);
       }
-      updateRtlUI(newState);
 
-      // Notify content script to apply/remove RTL immediately without full reload
-      // اطلاع به content script برای اعمال یا حذف فوری RTL بدون ریلود کامل
-      chrome.runtime.sendMessage({
-        action: 'toggleRtl',
-        enabled: newState
-      }, function(response) {
-        if (chrome.runtime.lastError) {
-          log.error('Persianer Popup: Error sending RTL message:', chrome.runtime.lastError);
-        }
-      });
+      // edit gear (only for editable profiles)
+      if (p.editable !== false) {
+        const gear = document.createElement('button');
+        gear.className = 'edit-gear';
+        gear.title = 'ویرایش پروفایل';
+        gear.innerHTML = GEAR_SVG;
+        gear.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openOptionsForProfile(id);
+        });
+        row.appendChild(gear);
+      }
 
-      setTimeout(function() { loadState(); }, 800);
+      row.addEventListener('click', () => toggleProfile(id));
+      el.profileList.appendChild(row);
     });
   }
 
   /**
-   * Initialize popup
-   * راه‌اندازی popup
+   * Toggle a profile's active state. Applies the off mutual-exclusion rule
+   * on the background side, then re-renders.
+   * تغییر وضعیت فعال بودن یک پروفایل.
    */
-  function initialize() {
-    log.debug('Persianer Popup: Initializing...');
-    
-    // Load current state
-    // بارگذاری وضعیت فعلی
-    loadState();
-    
-    // Add event listener to toggle switch and its label
-    // افزودن شنونده رویداد به سوئیچ و برچسب آن
-    toggleSwitch.addEventListener('click', handleToggle);
-    rtlToggleSwitch.addEventListener('click', handleRtlToggle);
-    document.querySelector('label[for="toggle-switch"]').addEventListener('click', handleToggle);
-    document.querySelector('label[for="rtl-toggle-switch"]').addEventListener('click', handleRtlToggle);
-    
-    log.debug('Persianer Popup: Initialized successfully');
+  function toggleProfile(id) {
+    if (!currentState) return;
+
+    let active;
+    if (id === PersianerProfiles.OFF_ID) {
+      // Toggling "off": on → only off, off → activate default
+      const offActive = (currentState.activeProfileIds || []).indexOf(PersianerProfiles.OFF_ID) !== -1;
+      active = offActive ? [PersianerProfiles.DEFAULT_ID] : [PersianerProfiles.OFF_ID];
+    } else {
+      active = (currentState.activeProfileIds || []).slice();
+      const idx = active.indexOf(id);
+      if (idx === -1) {
+        active.push(id);
+      } else {
+        active.splice(idx, 1);
+      }
+      // If user unchecked everything, keep default active (avoid empty state).
+      if (active.length === 0) active.push(PersianerProfiles.DEFAULT_ID);
+    }
+
+    const msg = { action: 'setActiveProfiles', activeProfileIds: active };
+    // Only send toggledId for non-off so background applies the off-removal rule
+    if (id !== PersianerProfiles.OFF_ID) msg.toggledId = id;
+
+    chrome.runtime.sendMessage(
+      msg,
+      (resp) => {
+        if (chrome.runtime.lastError) {
+          log.error('Popup: setActiveProfiles error:', chrome.runtime.lastError);
+          return;
+        }
+        if (resp && resp.success && resp.state) {
+          currentState = resp.state;
+          render();
+        }
+      }
+    );
   }
 
-  // Initialize when DOM is ready
-  // راه‌اندازی زمانی که DOM آماده است
+  /**
+   * Open the options page. Optionally pass a profile id to pre-select
+   * via a query parameter the options page reads on load.
+   * باز کردن صفحه تنظیمات (با انتخاب اختیاری یک پروفایل).
+   */
+  function openOptionsForProfile(profileId) {
+    const url = profileId
+      ? chrome.runtime.getURL('options.html') + '?profile=' + encodeURIComponent(profileId)
+      : chrome.runtime.getURL('options.html');
+    chrome.tabs.create({ url: url });
+  }
+
+  /**
+   * Initialize popup.
+   * راه‌اندازی popup.
+   */
+  async function initialize() {
+    log.debug('Popup: initializing');
+    currentHostname = await getCurrentHostname();
+    currentState = await loadState();
+    render();
+
+    el.manageBtn.addEventListener('click', () => openOptionsForProfile(null));
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initialize);
   } else {
     initialize();
   }
 
-  // Handle errors
-  // مدیریت خطاها
-  window.addEventListener('error', function(event) {
-    log.error('Persianer Popup: Error:', event.error);
+  window.addEventListener('error', (e) => {
+    log.error('Popup: error:', e.error);
   });
-
 })();
