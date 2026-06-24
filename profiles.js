@@ -441,6 +441,7 @@
       if (s.dateConversion) merged.dateConversion = true;
       if (s.persianRtl) merged.persianRtl = true;
       if (s.fullPageRtl) merged.fullPageRtl = true;
+      if (s.forceFont) merged.forceFont = true;
     });
     var scalarProfile = mostSpecific(matched, state);
     if (scalarProfile) {
