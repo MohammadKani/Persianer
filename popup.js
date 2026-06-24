@@ -103,19 +103,20 @@
 
     setFeatureCard(el.cardFont, isActive);
 
-    // Show font name + force badge in the detail line
-    if (el.cardFontDetail) {
-      if (hasFont) {
-        let detail = settings.font.trim();
-        if (isForced) {
-          detail = '<span class="force-badge">اجباری</span>' + detail;
-        }
-        el.cardFontDetail.innerHTML = detail;
-        el.cardFontDetail.classList.remove('hidden');
-      } else {
-        el.cardFontDetail.textContent = '';
-        el.cardFontDetail.classList.add('hidden');
+    // Override the badge text: show font name instead of "فعال"
+    const statusEl = el.cardFont ? el.cardFont.querySelector('.feature-status') : null;
+    if (isActive && statusEl) {
+      let badge = settings.font.trim();
+      if (isForced) {
+        badge =  badge + '<span class="force-badge">اجباری</span>';
       }
+      statusEl.innerHTML = badge;
+    }
+
+    // Hide the detail line — info is now in the badge
+    if (el.cardFontDetail) {
+      el.cardFontDetail.textContent = '';
+      el.cardFontDetail.classList.add('hidden');
     }
   }
 

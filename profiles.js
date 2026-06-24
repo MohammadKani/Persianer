@@ -165,24 +165,24 @@
           whitelist: ['^chatgpt\\.com$', '^chat\\.openai\\.com$', '^.*\\.openai\\.com$']
         }
       },
-      copilot: {
-        id: 'copilot',
-        name: 'هوش مصنوعی Copilot',
-        builtin: true,
-        deletable: true,
-        editable: true,
-        color: '#a371f0',
-        settings: {
-          dateConversion: true,
-          persianRtl: true,
-          minPersianChars: DEFAULT_MIN_CHARS,
-          fullPageRtl: false,
-          font: 'Sahel',
-          forceFont: false,
-          blacklist: [],
-          whitelist: ['^github\\.com$', '^.*\\.github\\.com$', '^copilot\\.github\\.com$']
-        }
-      }
+      // copilot: {
+      //   id: 'copilot',
+      //   name: 'هوش مصنوعی Copilot',
+      //   builtin: true,
+      //   deletable: true,
+      //   editable: true,
+      //   color: '#a371f0',
+      //   settings: {
+      //     dateConversion: true,
+      //     persianRtl: true,
+      //     minPersianChars: DEFAULT_MIN_CHARS,
+      //     fullPageRtl: false,
+      //     font: 'Sahel',
+      //     forceFont: false,
+      //     blacklist: [],
+      //     whitelist: ['^github\\.com$', '^.*\\.github\\.com$', '^copilot\\.github\\.com$']
+      //   }
+      // }
     };
   }
 

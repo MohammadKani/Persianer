@@ -396,7 +396,8 @@
     features.appendChild(makeFeatureRow('↩️', 'راست‌چین: ' + rtlLabel, !(s.persianRtl || s.fullPageRtl)));
 
     // Font
-    features.appendChild(makeFeatureRow('🔤', 'فونت: ' + (s.font || 'Sahel'), false));
+    const fontLabel = s.font ? ('فونت: ' + s.font + (s.forceFont ? ' (اجباری)' : '')) : 'فونت: پیش‌فرض سایت';
+    features.appendChild(makeFeatureRow('🔤', fontLabel, !s.font));
 
     // Whitelist / blacklist counts
     const wl = (s.whitelist || []).length;

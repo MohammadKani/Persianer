@@ -259,6 +259,11 @@
       padding: 1px 8px;
       border-radius: 10px;
       transition: all 0.3s ease;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
     }
 
     .feature-card.active .feature-status {
@@ -291,14 +296,16 @@
       display: none;
     }
 
-    .feature-detail .force-badge {
+    .feature-detail .force-badge,
+    .feature-status .force-badge {
       display: inline-block;
       background: rgba(166, 227, 161, 0.2);
       color: var(--success);
       padding: 0 5px;
       border-radius: 8px;
       font-size: 8px;
-      margin-right: 3px;
+      margin-left: 3px;
+      vertical-align: middle;
     }
 
     /* ---- Profile list ---- */
