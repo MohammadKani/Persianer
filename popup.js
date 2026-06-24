@@ -21,9 +21,7 @@
   };
 
   const el = {
-    statusPill: document.getElementById('status-pill'),
-    statusPillText: document.getElementById('status-pill-text'),
-    statusHost: document.getElementById('status-host'),
+    statusHost: document.getElementById('domain-badge'),
     cardDate: document.getElementById('card-date'),
     cardRtl: document.getElementById('card-rtl'),
     cardFont: document.getElementById('card-font'),
@@ -99,8 +97,6 @@
    */
   function render() {
     if (!currentState) {
-      el.statusPill.className = 'status-pill inactive';
-      el.statusPillText.textContent = 'نامشخص';
       el.statusHost.textContent = '';
       el.profileList.innerHTML = '';
       setFeatureCard(el.cardDate, false);
@@ -111,7 +107,7 @@
 
     const state = currentState;
     const host = currentHostname;
-    el.statusHost.textContent = host ? 'دامنه: ' + host : '';
+    el.statusHost.textContent = host || '';
 
     // Effective settings for this tab
     const result = PersianerProfiles.computeEffective(state, host);
@@ -125,13 +121,7 @@
     setFeatureCard(el.cardFont, s.forceFont || (s.font && s.font !== 'Sahel'));
 
     // Update status pill
-    if (offActive || !anyFeatureOn) {
-      el.statusPill.className = 'status-pill inactive';
-      el.statusPillText.textContent = offActive ? 'خاموش' : 'غیرفعال';
-    } else {
-      el.statusPill.className = 'status-pill active';
-      el.statusPillText.textContent = 'فعال';
-    }
+    // (status pill removed from UI — feature cards now convey status)
 
     // Build profile list in profileOrder
     const order = state.profileOrder || [];
@@ -154,6 +144,7 @@
       // toggle switch
       const toggleContainer = document.createElement('label');
       toggleContainer.className = 'profile-toggle';
+      toggleContainer.style.setProperty('--profile-color', p.color || '#9e9e9e');
       toggleContainer.title = isActive ? 'غیرفعال کردن پروفایل' : 'فعال کردن پروفایل';
 
       const toggleInput = document.createElement('input');
