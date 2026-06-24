@@ -884,7 +884,7 @@
     try {
         // Skip date conversion if disabled via data attribute
         // اگر تبدیل تاریخ غیرفعال باشد از طریق ویژگی data رد شود
-        const _dateEnabled = document.documentElement.getAttribute('data-gd2pd-enabled');
+        const _dateEnabled = document.documentElement.getAttribute('data-persianer-enabled');
         if (_dateEnabled === 'false') {
             log.debug('⏭️ Date conversion disabled — skipping convertAllDates');
         } else if (!document) {
@@ -966,7 +966,7 @@
     // شروع رصد تغییرات (فقط اگر تبدیل تاریخ فعال باشد)
     // Start observing changes (only if date conversion is enabled)
     try {
-        const _dateEnabledForObserver = document.documentElement.getAttribute('data-gd2pd-enabled');
+        const _dateEnabledForObserver = document.documentElement.getAttribute('data-persianer-enabled');
         if (_dateEnabledForObserver === 'false') {
             log.debug('⏭️ MutationObserver skipped — date conversion disabled');
         } else if (!document || !document.body) {
@@ -1027,22 +1027,99 @@
             H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1, PRE: 1, FIGURE: 1
         };
 
-        var MIN_PERSIAN = 10;
+        // Read configurable values from data attributes set by content.js
+        // (profile-driven). Fall back to defaults if attributes are absent.
+        // خواندن مقادیر پیکربندی‌شونده از ویژگی‌های data (بر اساس پروفایل).
+        function readMinChars() {
+            var v = document.documentElement.getAttribute('data-persianer-minchars');
+            var n = parseInt(v, 10);
+            return (isNaN(n) || n < 1) ? 10 : n;
+        }
+        function readFont() {
+            var f = document.documentElement.getAttribute('data-persianer-font');
+            return (f && f.trim()) ? f.trim() : 'Sahel';
+        }
+        function readForceFont() {
+            var ff = document.documentElement.getAttribute('data-persianer-forcefont');
+            return ff === 'true';
+        }
+
+        var MIN_PERSIAN = readMinChars();
+        var ACTIVE_FONT = readFont();
+        var FORCE_FONT = readForceFont();
         var PERSIAN_RE = /[\u0600-\u06FF]/g;
-        var APPLIED_ATTR = 'data-gd2pd-rtl';
+        var APPLIED_ATTR = 'data-persianer-rtl';
         var RTL_CLASS = 'persianer-rtl';
+        var FULLRTL_ATTR = 'data-persianer-fullrtl-applied';
         var rtlObserver = null;
         var rtlInitialized = false;
+        var fullRtlApplied = false;
 
-        // Inject CSS once
+        // Inject CSS once. Font is configurable via profile (data-persianer-font).
+        // When forceFont is ON, add !important to override site styles.
+        // تزریق CSS یک‌بار. فونت از طریق پروفایل قابل پیکربندی است.
+        // وقتی forceFont روشن است، !important اضافه می‌شود تا CSS سایت را بازنویسی کند.
+        function buildRtlCss() {
+            var fontFamily = FORCE_FONT
+                ? 'font-family: ' + ACTIVE_FONT + ' !important;'
+                : 'font-family: ' + ACTIVE_FONT + ', "Segoe UI", Tahoma;';
+            return '.' + RTL_CLASS + ' { direction: rtl; ' + fontFamily + ' }';
+        }
         (function injectRtlStyle() {
             var styleId = 'persianer-rtl-style';
-            if (document.getElementById(styleId)) return;
+            var existing = document.getElementById(styleId);
+            if (existing) {
+                existing.textContent = buildRtlCss();
+                return;
+            }
             var style = document.createElement('style');
             style.id = styleId;
-            style.textContent = '.' + RTL_CLASS + ' { direction: rtl; font-family: Sahel, "Segoe UI", Tahoma; }';
+            style.textContent = buildRtlCss();
             (document.head || document.documentElement).appendChild(style);
         })();
+
+        // Full-page RTL: set dir=rtl on <body> (profile-driven, off by default).
+        // When forceFont is ON, also inject CSS to force font on all elements.
+        // RTL تمام‌صفحه: تنظیم dir=rtl روی <body> (بر اساس پروفایل، پیش‌فرض خاموش).
+        // وقتی forceFont روشن است، CSS اجباری فونت روی همه عناصر تزریق می‌شود.
+        function applyFullPageRTL() {
+            if (fullRtlApplied) return;
+            var body = document.body;
+            if (!body) return;
+            body.setAttribute('dir', 'rtl');
+            body.setAttribute(FULLRTL_ATTR, '1');
+            fullRtlApplied = true;
+            if (FORCE_FONT) applyFullPageFont();
+            log.debug('↔️ Full-page RTL applied to <body>');
+        }
+        function removeFullPageRTL() {
+            if (!fullRtlApplied) return;
+            var body = document.body;
+            if (body) {
+                body.removeAttribute('dir');
+                body.removeAttribute(FULLRTL_ATTR);
+            }
+            fullRtlApplied = false;
+            removeFullPageFont();
+            log.debug('↔️ Full-page RTL removed from <body>');
+        }
+
+        // Force font on all elements for full-page RTL mode.
+        // اعمال اجباری فونت روی همه عناصر در حالت RTL کل صفحه.
+        function applyFullPageFont() {
+            var styleId = 'persianer-fullpage-font';
+            var existing = document.getElementById(styleId);
+            if (existing) return;
+            var style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = 'body, body * { font-family: ' + ACTIVE_FONT + ' !important; }';
+            (document.head || document.documentElement).appendChild(style);
+            log.debug('🔤 Full-page force font applied: ' + ACTIVE_FONT + ' !important');
+        }
+        function removeFullPageFont() {
+            var style = document.getElementById('persianer-fullpage-font');
+            if (style) style.remove();
+        }
 
         function countPersian(text) {
             var m = text.match(PERSIAN_RE);
@@ -1184,15 +1261,66 @@
             }
         });
 
+        // Full-page RTL toggle (profile-driven). Sets dir=rtl on <body>.
+        // تغییر RTL تمام‌صفحه (بر اساس پروفایل). dir=rtl روی <body>.
+        document.addEventListener('Persianer-fullrtl-toggle', function(event) {
+            try {
+                if (event.detail && event.detail.enabled) {
+                    applyFullPageRTL();
+                } else {
+                    removeFullPageRTL();
+                }
+            } catch (err) {
+                log.error('❌ Full-page RTL toggle event error:', err);
+            }
+        });
+
+        // Font change (profile-driven). Rebuilds the injected RTL CSS rule.
+        // Also re-reads FORCE_FONT and rebuilds full-page font style.
+        // تغییر فونت (بر اساس پروفایل). بازسازی قانون CSS تزریق‌شده.
+        // همچنین FORCE_FONT را دوباره می‌خواند و CSS کامل صفحه را بازسازی می‌کند.
+        document.addEventListener('Persianer-font-change', function(event) {
+            try {
+                var newFont = (event.detail && event.detail.font) ? event.detail.font : readFont();
+                var newForce = (event.detail && typeof event.detail.forceFont !== 'undefined') ? event.detail.forceFont : readForceFont();
+                ACTIVE_FONT = newFont;
+                FORCE_FONT = newForce;
+                var styleEl = document.getElementById('persianer-rtl-style');
+                if (styleEl) {
+                    styleEl.textContent = buildRtlCss();
+                    log.debug('🔤 Font changed to: ' + newFont + (FORCE_FONT ? ' (forced)' : ''));
+                }
+                // Rebuild full-page font style if present
+                removeFullPageFont();
+                if (fullRtlApplied && FORCE_FONT) {
+                    applyFullPageFont();
+                }
+            } catch (err) {
+                log.error('❌ Font change event error:', err);
+            }
+        });
+
         // Read initial config and activate if enabled
         // خواندن پیکربندی اولیه و فعال‌سازی در صورت روشن بودن
-        var _attrRtl = document.documentElement.getAttribute('data-gd2pd-autortl');
+        var _attrRtl = document.documentElement.getAttribute('data-persianer-autortl');
         var _cfgRtl = window.__Persianer && window.__Persianer.autoRtl;
         var autoRtlOn = (_attrRtl !== null) ? (_attrRtl === 'true') : (_cfgRtl !== false);
         if (autoRtlOn) {
             activateRTL();
         } else {
             log.debug('↔️ Auto RTL disabled at load — toggle listener ready');
+        }
+
+        // Apply full-page RTL at load if the profile enabled it.
+        // اعمال RTL تمام‌صفحه در زمان بارگذاری اگر پروفایل فعال کرده باشد.
+        var _attrFullRtl = document.documentElement.getAttribute('data-persianer-fullrtl');
+        if (_attrFullRtl === 'true') {
+            // <body> may not exist yet at injection time; wait if needed.
+            if (document.body) {
+                applyFullPageRTL();
+            } else {
+                document.addEventListener('DOMContentLoaded', applyFullPageRTL, { once: true });
+            }
         }
 
     })();

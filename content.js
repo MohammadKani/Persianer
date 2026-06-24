@@ -1,6 +1,6 @@
 /**
- * Content Script - Loads and manages the date conversion script
- * اسکریپت محتوا - مدیریت و بارگذاری اسکریپت تبدیل تاریخ
+ * Content Script - Loads and manages the conversion/RTL script per profile
+ * اسکریپت محتوا - بارگذاری و مدیریت اسکریپت بر اساس پروفایل‌ها
  */
 
 (function() {
@@ -8,20 +8,20 @@
 
   let scriptInjected = false;
 
-  // Check if extension is enabled
-  // بررسی فعال بودن افزونه
-  chrome.storage.sync.get(['enabled', 'autoRtlEnabled'], function(result) {
-    const isEnabled = result.enabled !== false;
-    const autoRtlEnabled = result.autoRtlEnabled !== false;
+  // Compute the effective merged settings for THIS page's hostname, then
+  // inject script.js if any feature is on. All profile matching/merging
+  // happens in the shared PersianerProfiles core (loaded before content.js).
+  // محاسبه تنظیمات مؤثر برای نام میزبان این صفحه، سپس تزریق اسکریپت.
+  PersianerProfiles.loadState(function (state) {
+    const hostname = location.hostname || '';
+    const result = PersianerProfiles.computeEffective(state, hostname);
+    const s = result.settings;
 
-    // Inject if either feature is on — Auto RTL works independently of date conversion
-    // تزریق اگر حتی یکی از ویژگی‌ها فعال باشد — راست‌چین خودکار مستقل از تبدیل تاریخ کار می‌کند
-    if (isEnabled || autoRtlEnabled) {
-      injectConversionScript(isEnabled, autoRtlEnabled);
+    const anyFeatureOn = s.dateConversion || s.persianRtl || s.fullPageRtl;
 
-      // Setup late-loading observers only when date conversion is active
-      // راه‌اندازی رصدگرهای دیررس فقط زمانی که تبدیل تاریخ فعال است
-      if (isEnabled) {
+    if (anyFeatureOn) {
+      injectConversionScript(s);
+      if (s.dateConversion) {
         setupLateLoadingHandlers();
       }
     }
@@ -64,35 +64,47 @@
   }
 
   /**
-   * Inject the main conversion script into the page context
-   * تزریق اسکریپت اصلی تبدیل به محیط صفحه
+   * Inject the main conversion script into the page context.
+   * Passes the effective merged settings via data attributes on <html> (CSP-safe).
+   * تزریق اسکریپت اصلی به محیط صفحه. تنظیمات از طریق data attributes منتقل می‌شود.
    */
-  async function injectConversionScript(dateEnabled, autoRtlEnabled) {
+  async function injectConversionScript(settings) {
     if (scriptInjected) {
-      console.log('Persianer: Script already injected, skipping...');
+      console.log('Persianer: Script already injected, updating attributes only');
+      applySettingsAttributes(settings);
       return;
     }
     
     try {
-      // Pass both feature flags via data attributes on <html> (CSP-safe)
-      // ارسال هر دو پرچم ویژگی از طریق ویژگی‌های data روی <html> (ایمن در برابر CSP)
-      document.documentElement.setAttribute('data-gd2pd-enabled', dateEnabled ? 'true' : 'false');
-      document.documentElement.setAttribute('data-gd2pd-autortl', autoRtlEnabled ? 'true' : 'false');
+      applySettingsAttributes(settings);
 
       // Inject scripts in order: config.js -> logger.js -> script.js
       // تزریق اسکریپت‌ها به ترتیب: config.js -> logger.js -> script.js
       await injectScript('config.js');
       await injectScript('logger.js');
       await injectScript('script.js', () => {
-        console.log('تبدیل تاریخ: اسکریپت با موفقیت بارگذاری شد');
+        console.log('Persianer: script loaded successfully');
         scriptInjected = true;
       });
       
     } catch (error) {
       console.error('Persianer: Error injecting scripts:', error);
-      console.error('تبدیل تاریخ: خطا در تزریق اسکریپت‌ها:', error);
       scriptInjected = false;
     }
+  }
+
+  /**
+   * Write the effective settings onto <html> as data attributes.
+   * نوشتن تنظیمات مؤثر روی <html> به‌صورت ویژگی‌های data.
+   */
+  function applySettingsAttributes(settings) {
+    const html = document.documentElement;
+    html.setAttribute('data-persianer-enabled', settings.dateConversion ? 'true' : 'false');
+    html.setAttribute('data-persianer-autortl', settings.persianRtl ? 'true' : 'false');
+    html.setAttribute('data-persianer-fullrtl', settings.fullPageRtl ? 'true' : 'false');
+    html.setAttribute('data-persianer-minchars', String(settings.minPersianChars));
+    html.setAttribute('data-persianer-font', settings.font || 'Sahel');
+    html.setAttribute('data-persianer-forcefont', settings.forceFont ? 'true' : 'false');
   }
 
   /**
@@ -195,17 +207,26 @@
       sendResponse({ status: 'reloading' });
     }
 
-    if (request.action === 'applyRtl') {
-      // Update the data attribute so script.js knows the new state
-      // به‌روزرسانی ویژگی data تا script.js وضعیت جدید را بداند
-      document.documentElement.setAttribute('data-gd2pd-autortl', request.enabled ? 'true' : 'false');
-
-      // Dispatch event so the Auto RTL module in script.js reacts immediately
-      // ارسال رویداد تا ماژول راست‌چین خودکار در script.js فوری واکنش نشان دهد
+    // Live-apply effective settings without a full reload (optional path).
+    // Updates the data attributes and dispatches toggle events so script.js
+    // can react. The primary apply path is a tab reload from background.
+    if (request.action === 'applySettings' && request.settings) {
+      applySettingsAttributes(request.settings);
       document.dispatchEvent(new CustomEvent('Persianer-rtl-toggle', {
         bubbles: true,
-        detail: { enabled: request.enabled }
+        detail: { enabled: request.settings.persianRtl }
       }));
+      document.dispatchEvent(new CustomEvent('Persianer-fullrtl-toggle', {
+        bubbles: true,
+        detail: { enabled: request.settings.fullPageRtl }
+      }));
+      document.dispatchEvent(new CustomEvent('Persianer-font-change', {
+        bubbles: true,
+        detail: { font: request.settings.font }
+      }));
+      if (request.settings.dateConversion) {
+        triggerConversionEvent();
+      }
       sendResponse({ status: 'applied' });
     }
 
